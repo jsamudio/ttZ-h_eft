@@ -37,7 +37,7 @@ class processAna :
     '''
     callable object designed to process data that has been extracted from
     root files
-    
+
     the output are .pkl files ready for histogram analysis and Combine Tool
     '''
     # Allowed class variables
@@ -71,7 +71,7 @@ class processAna :
     #
     ak4_dR = 0.4
     ak8_dR = 0.8
-    
+
 
     def __init__(self, kwargs):
         [setattr(self,k,v) for k,v in kwargs.items() if k in processAna.__dict__.keys()]
@@ -90,13 +90,13 @@ class processAna :
         self.val_df['topptWeight_Up']   = 1.
         self.val_df['topptWeight_Down'] = 1.
         #
-        if self.isSignal or self.isttbar or self.isST: 
-            self.match_gen_lep() 
+        if self.isSignal or self.isttbar or self.isST:
+            self.match_gen_lep()
             if   self.isttbar:
-                self.match_gen_tt()  
+                self.match_gen_tt()
             elif self.isSignal:
-                # Note: can be improved if ran after ZH is reconstructed and used to gen-reco match 
-                self.match_gen_sig() 
+                # Note: can be improved if ran after ZH is reconstructed and used to gen-reco match
+                self.match_gen_sig()
         #
         self.passHLT_by_year()
         #self.applyDNN(model_file='withbbvlnewgenm_model.h5')
@@ -121,7 +121,7 @@ class processAna :
         self.categorize_process()
         #
         if self.outTag != '': outTag = f'{self.outTag}_'
-        else: outTag = '' 
+        else: outTag = ''
         #
         if self.condor: out_path = f'{self.sample}_{self.year}_{outTag}'
         else:
@@ -145,7 +145,7 @@ class processAna :
         rZh_eta = self.val_df['Zh_eta'].values
         rZh_phi = self.val_df['Zh_phi'].values
         #
-        isb = ( (abs(gen_ids) == 5) & (abs(gen_ids[gen_mom]) != 5) ) 
+        isb = ( (abs(gen_ids) == 5) & (abs(gen_ids[gen_mom]) != 5) )
         b_eta, b_phi =  gen_eta[isb], gen_phi[isb]
         rzh_matchb_dR = deltaR(rZh_eta, rZh_phi, b_eta, b_phi)
         self.val_df['n_genb_matchZH'] = (rzh_matchb_dR <= 0.6).sum()
@@ -156,13 +156,13 @@ class processAna :
         r_ratio_json = json.load(open(cfg.dataDir+f'/btagw_r_ratio/btagw_r_ratio_{self.year}.json', 'r'))
         if 'sys' in sample_cfg[self.sample]['out_name']:
             # ttbar/ttbb_sys to use nominal ttbar and ttbb
-            r_ratios = r_ratio_json[sample_cfg['_'.join(self.sample.split('_')[:-1])]['out_name']] 
+            r_ratios = r_ratio_json[sample_cfg['_'.join(self.sample.split('_')[:-1])]['out_name']]
         elif 'EFT' in self.sample: # dont really care about b-tag weight here, just take some dummy wieght
             if 'TTZ' in self.sample:
                 r_ratios = r_ratio_json['ttZ'] # signal eft
             if 'TTH' in self.sample:
                 r_ratios = r_ratio_json['ttH'] # signal eft
-            else: 
+            else:
                 r_ratios = r_ratio_json['ttbb'] # ttbb (perhaps ttbar) eft
         else:
             r_ratios = r_ratio_json[sample_cfg[self.sample]['out_name']]
@@ -194,7 +194,7 @@ class processAna :
         elif 'Had' in self.sample:
             self.val_df['tt_type'] = 'Had'
         # match tt or ttZ/h gen particles to recontructed objects
-        g = 'GenPart_' 
+        g = 'GenPart_'
         gen_ids, gen_mom, gen_st, gen_pt, gen_eta, gen_phi, gen_mass, gentt_bb = self.gen_df.loc(
             [g+'pdgId',g+'genPartIdxMother',g+'status',g+'pt',g+'eta',g+'phi', g+'mass', 'genTtbarId']
         ).values()
@@ -211,7 +211,7 @@ class processAna :
         is_tt_c  = gentt_bb == 41
         is_tt_2c = gentt_bb == 42
         is_tt_cc = (gentt_bb >= 43) & (gentt_bb<50)
-        # 
+        #
         self.val_df['tt_C'] = is_tt_C
         self.val_df['tt_B'] = is_tt_B
         self.val_df['tt_b'] = is_tt_b
@@ -263,16 +263,16 @@ class processAna :
 
         #toppt_sys = AnaDict.read_pickle(f'{self.dataDir}toppt_sys_files/toppt_sys.pkl')
         #https://indico.cern.ch/event/904971/contributions/3857701/attachments/2036949/3410728/TopPt_20.05.12.pdf'
-        # the theo toppt event re-weighting unc. is based on [1, w**2] where w is the event reweighting 
-        toppt_rwgt = np.sqrt(sf(tt_pt[:,0]) * sf(tt_pt[:,1])) 
+        # the theo toppt event re-weighting unc. is based on [1, w**2] where w is the event reweighting
+        toppt_rwgt = np.sqrt(sf(tt_pt[:,0]) * sf(tt_pt[:,1]))
         toppt_rwgt_up = np.where(toppt_rwgt > 1.0, toppt_rwgt**2,  1.0)
         toppt_rwgt_dn = np.where(toppt_rwgt < 1.0, toppt_rwgt**2,  1.0)
         self.val_df['tt_pt1'], self.val_df['tt_pt2'] = tt_pt[:,0], tt_pt[:,1]
         self.val_df['topptWeight']      = toppt_rwgt
         self.val_df['topptWeight_Up']   = toppt_rwgt_up
         self.val_df['topptWeight_Down'] = toppt_rwgt_dn
-            
-                    
+
+
     @staticmethod
     def getToppt_sys(dist, sys):
         bins=[float(bin_str.split(',')[0]) for bin_str in sys] + [float(list(sys.keys())[-1].split(',')[1])]
@@ -280,11 +280,11 @@ class processAna :
         top_sys = digi.map(lambda k: sys[k])
         return top_sys.to_numpy(dtype=float)
 
-            
+
     @t2Run
     def match_gen_sig(self):
         # match tt or ttZ/h gen particles to recontructed objects
-        g = 'GenPart_' 
+        g = 'GenPart_'
         gen_ids, gen_mom, gen_st, gen_pt, gen_eta, gen_phi, gen_mass = self.gen_df.loc(
             [g+'pdgId',g+'genPartIdxMother',g+'status',g+'pt',g+'eta',g+'phi',g+'mass']
         ).values()
@@ -331,7 +331,7 @@ class processAna :
         zh_matchb    = ((rzh_matchb_dR <= 0.6).sum() == 1)
         zh_nomatchb    = ((rzh_matchb_dR <= 0.6).sum() == 0)
         #zh_match_dR = deltaR(zh_eta,zh_phi,ak8_eta,ak8_phi)
-        #zh_match = ((ak8_pt >= self.pt_cut ) & (ak8_Zhbbtag >= 0.0) &  
+        #zh_match = ((ak8_pt >= self.pt_cut ) & (ak8_Zhbbtag >= 0.0) &
         #            (zh_match_dR <= 0.8) & (zh_pt >= ( self.pt_cut-100.)) & (zh_eta <= 2.4) & (zh_eta >= -2.4))
         zh_match = ((zh_match_dR <= 0.6) & (zh_pt >= ( self.pt_cut-100.)) & (zh_eta <= 2.4) & (zh_eta >= -2.4))
         #
@@ -349,7 +349,7 @@ class processAna :
         self.val_df['genZHrap'] = zh_tlv.rapidity
         self.val_df['genZHstxs'] = abs(zh_tlv.rapidity) <= 2.5
         #
-        self.val_df['matchedGenZH']    = (zh_match).sum() > 0 
+        self.val_df['matchedGenZH']    = (zh_match).sum() > 0
         self.val_df['matchedGen_Zbb']  = (((zh_match).sum() > 0) & (self.val_df['matchedGenLep']) & (isZbb.sum() >  0))
         self.val_df['matchedGen_Hbb']  = (((zh_match).sum() > 0) & (self.val_df['matchedGenLep']) & (isHbb.sum() >  0))
         self.val_df['matchedGen_ZHbb'] = (((zh_match).sum() > 0) & (self.val_df['matchedGenLep']) & ((isZbb.sum() + isHbb.sum()) > 0))
@@ -372,7 +372,7 @@ class processAna :
         gen_mom = self.gen_df['GenPart_genPartIdxMother']
         gen_eta = self.gen_df['GenPart_eta']
         gen_phi = self.gen_df['GenPart_phi']
-        
+
         #
         if not self.isST:
             islep   = (((abs(gen_ids) == 11) | (abs(gen_ids) == 13)) & ((abs(gen_ids[gen_mom[gen_mom]]) == 6) & (abs(gen_ids[gen_mom]) ==24)))
@@ -386,12 +386,12 @@ class processAna :
         self.val_df['n_w_leps_notau'] = (((abs(gen_ids) == 11) | (abs(gen_ids) == 13)) & (abs(gen_ids[gen_mom]) ==24)).sum() # for single t samples
         self.val_df['n_w_leps'] = (((abs(gen_ids) == 11) | (abs(gen_ids) == 13) | (abs(gen_ids) == 15)) & (abs(gen_ids[gen_mom]) ==24)).sum() # for single t samples
         self.val_df['matchedGenLep'] = ((lep_match_dr <= .1).sum() > 0)
-    
+
     @t2Run
     def applyDNN(self, model_file='withdak8md_model.h5'):
         from modules.dnn_model import DNN_model
 
-        nn_dir    = cfg.dnn_ZH_dir 
+        nn_dir    = cfg.dnn_ZH_dir
         dnn_vars = {
             'newgenm_model.h5' :      cfg.withbbvl_dnn_ZHgenm_vars, # new training
             'newreduced1p0_model.h5' : cfg.reduced1p0genm_vars,
@@ -405,17 +405,17 @@ class processAna :
         resetIndex = (lambda df: df.reset_index(drop=True).copy())
         #open json nn settings
         # -- old nn
-        #m_info =  {'sequence': [['Dense', 128], ['Dense', 64], ['Dropout', 0.5]], 
-        #           'other_settings': {'fl_a': [0.75, 1, 0.25], 
-        #                              'fl_g': 0.25, 'lr_alpha': 0.0003}, 
+        #m_info =  {'sequence': [['Dense', 128], ['Dense', 64], ['Dropout', 0.5]],
+        #           'other_settings': {'fl_a': [0.75, 1, 0.25],
+        #                              'fl_g': 0.25, 'lr_alpha': 0.0003},
         #           'n_epochs': 100, 'batch_size': 10256
-        #} 
+        #}
         # -- new nn
-        m_info = {'sequence': [['Dense', 128], ['Dense', 64], ['Dropout', 0.5]], 
-                  'other_settings': {'fl_a': [1, 1.5, 1], 'fl_g': 0.25, 'lr_alpha': 0.0003}, 
+        m_info = {'sequence': [['Dense', 128], ['Dense', 64], ['Dropout', 0.5]],
+                  'other_settings': {'fl_a': [1, 1.5, 1], 'fl_g': 0.25, 'lr_alpha': 0.0003},
                   'n_epochs': 150, 'batch_size': 10256}
         #
-        dnn = DNN_model(m_info['sequence'],m_info['other_settings']) 
+        dnn = DNN_model(m_info['sequence'],m_info['other_settings'])
         if 'binary' in model_file:
             nn_model = dnn.Build_Binary_Model(len(dnn_vars[model_file]), load_weights=model_file)#'nn_ttzh_model.h5')
         else:
@@ -430,7 +430,7 @@ class processAna :
                 pred = nn_model.predict(pred_df)
             else:
                 pred = nn_model.predict(pred_df)[:,2]
-        else: 
+        else:
             pred = 0
         df_nn_name = model_file.replace("model.h5",'')+'NN'
         self.val_df.loc[:,df_nn_name] = -1.
@@ -442,7 +442,7 @@ class processAna :
             explain_model = dnn.Build_New_Model(len(dnn_vars[model_file]), nn_model) # output size 64
             if len(pred_df) > 0:
                 explain_pred = explain_model.predict(pred_df) # shape (n_events, 64)
-            else: 
+            else:
                 explain_pred = -10* np.ones((1,m_info['sequence'][-2][-1]))
             print(m_info['sequence'][-2][-1])
             for i in range(m_info['sequence'][-2][-1]):
@@ -458,24 +458,24 @@ class processAna :
         sf_file_dict = json.load(open(cfg.dataDir+f'/deepak8sf/deepak8_bbvL_sf_{self.year}.json','r'))
         pt_bins = sf_file_dict['pt_bins']
         score_bins = sf_file_dict['score_bins']
-        # apply by file 
+        # apply by file
         def get_right_sf(_df,r_or_f='fake'):
             sf = sf_file_dict[r_or_f]['score_pt_sf']
             sf_err = sf_file_dict[r_or_f]['score_pt_sf_err']
-            pt_digi = pd.cut(_df['Zh_pt'].clip(pt_bins[0]+0.001,pt_bins[-1]-0.001), bins = pt_bins, 
+            pt_digi = pd.cut(_df['Zh_pt'].clip(pt_bins[0]+0.001,pt_bins[-1]-0.001), bins = pt_bins,
                              right=True,  include_lowest=True, labels=range(len(pt_bins)-1))
-            score_digi = pd.cut(_df['Zh_bbvLscore'], bins = score_bins, 
+            score_digi = pd.cut(_df['Zh_bbvLscore'], bins = score_bins,
                                 right=True,  include_lowest=True, labels=range(len(score_bins)-1))
             pt_digi_ignore_nan    = np.nan_to_num(pt_digi.values).astype(int)
             score_digi_ignore_nan = np.nan_to_num(score_digi.values).astype(int)
-            
+
             get_sf = (lambda _sf : np.array([ _sf[x][y] for x,y in zip(score_digi_ignore_nan,pt_digi_ignore_nan)]))
             _df.loc[:,'dak8md_bbvl_sf'] = np.where(score_digi.isna().values, 1, get_sf(sf))     # for bbvl = -10, we drop these events later
             list_sf_err                 = np.where(score_digi.isna().values, 0, get_sf(sf_err)) # for bbvl = -10
             _df.loc[:,'dak8md_bbvl_sf_Up']   = _df['dak8md_bbvl_sf'] + list_sf_err
             _df.loc[:,'dak8md_bbvl_sf_Down'] = _df['dak8md_bbvl_sf'] - list_sf_err
             return _df
-            
+
         if self.isSignal:
             self.val_df.loc[:,'dak8md_bbvl_sf']      = 1
             self.val_df.loc[:,'dak8md_bbvl_sf_Up']   = 1
@@ -487,7 +487,7 @@ class processAna :
             self.val_df = get_right_sf(self.val_df,'real')
         else:
             self.val_df = get_right_sf(self.val_df,'fake')
-            
+
     @t2Run
     def getbbvlsf_v2(self):
         sf_file_dict = json.load(open(cfg.dataDir+f'/deepak8sf/deepak8_bbvL_sf_{self.year}.json','r'))
@@ -499,16 +499,16 @@ class processAna :
             out_df = pd.DataFrame()
             sf = sf_file_dict[r_or_f]['score_pt_sdm_sf']
             sf_err = sf_file_dict[r_or_f]['score_pt_sdm_sf_err']
-            sdm_digi   = pd.cut(_df['Zh_M'], bins = sdm_bins, 
+            sdm_digi   = pd.cut(_df['Zh_M'], bins = sdm_bins,
                                 right=True,  include_lowest=True, labels=range(len(sdm_bins)-1))
-            pt_digi    = pd.cut(_df['Zh_pt'].clip(pt_bins[0]+0.001,pt_bins[-1]-0.001), bins = pt_bins, 
+            pt_digi    = pd.cut(_df['Zh_pt'].clip(pt_bins[0]+0.001,pt_bins[-1]-0.001), bins = pt_bins,
                                 right=True,  include_lowest=True, labels=range(len(pt_bins)-1))
-            score_digi = pd.cut(_df['Zh_bbvLscore'], bins = score_bins, 
+            score_digi = pd.cut(_df['Zh_bbvLscore'], bins = score_bins,
                                 right=True,  include_lowest=True, labels=range(len(score_bins)-1))
             sdm_digi_ignore_nan    = np.nan_to_num(sdm_digi.values).astype(int)
             pt_digi_ignore_nan     = np.nan_to_num(pt_digi.values).astype(int)
             score_digi_ignore_nan  = np.nan_to_num(score_digi.values).astype(int)
-            
+
             get_sf = (lambda _sf : np.array([ _sf[x][y][z] for x,y,z in zip(score_digi_ignore_nan,pt_digi_ignore_nan,sdm_digi_ignore_nan)]))
             out_df['dak8md_bbvl_sf'] = np.where(score_digi.isna().values, 1, get_sf(sf))     # for bbvl = -10, we drop these events later
             list_sf_err                 = np.where(score_digi.isna().values, 0, get_sf(sf_err)) # for bbvl = -10
@@ -516,15 +516,16 @@ class processAna :
             out_df['dak8md_bbvl_sf_Down'] = out_df['dak8md_bbvl_sf'] - list_sf_err
             return out_df
 
-            
-        self.val_df.loc[:,['dak8md_bbvl_sf','dak8md_bbvl_sf_Up', 'dak8md_bbvl_sf_Down']] = 1
-        self.val_df.loc[self.val_df['bbvl_genmatch'] == True,['dak8md_bbvl_sf','dak8md_bbvl_sf_Up', 'dak8md_bbvl_sf_Down']] = get_right_sf(self.val_df[self.val_df['bbvl_genmatch'] == True], 'real').values
-        self.val_df.loc[self.val_df['bbvl_genmatch'] == False,['dak8md_bbvl_sf','dak8md_bbvl_sf_Up', 'dak8md_bbvl_sf_Down']] = get_right_sf(self.val_df[self.val_df['bbvl_genmatch'] == False], 'fake').values
+
+        self.val_df.loc[:,['dak8md_bbvl_real_sf','dak8md_bbvl_real_sf_Up', 'dak8md_bbvl_real_sf_Down']] = 1
+        self.val_df.loc[:,['dak8md_bbvl_fake_sf','dak8md_bbvl_fake_sf_Up', 'dak8md_bbvl_fake_sf_Down']] = 1
+        self.val_df.loc[self.val_df['bbvl_genmatch'] == True,['dak8md_bbvl_real_sf','dak8md_bbvl_real_sf_Up', 'dak8md_bbvl_real_sf_Down']] = get_right_sf(self.val_df[self.val_df['bbvl_genmatch'] == True], 'real').values
+        self.val_df.loc[self.val_df['bbvl_genmatch'] == False,['dak8md_bbvl_fake_sf','dak8md_bbvl_fake_sf_Up', 'dak8md_bbvl_fake_sf_Down']] = get_right_sf(self.val_df[self.val_df['bbvl_genmatch'] == False], 'fake').values
 
 
     @t2Run
     def getLepEffSF(self):
-        l_dict = {'muon':'Mu', 'electron':'Elec'} 
+        l_dict = {'muon':'Mu', 'electron':'Elec'}
         self.val_df['lep_trigeffsf']      = 1
         self.val_df['lep_trigeffsf_Up']   = 1
         self.val_df['lep_trigeffsf_Down'] = 1
@@ -547,9 +548,9 @@ class processAna :
 
     @t2Run
     def getLepSF(self):
-        l_dict = {'muon':'Mu', 'electron':'Elec'} 
+        l_dict = {'muon':'Mu', 'electron':'Elec'}
         lep_pt  = self.val_df['Lep_pt']
-        lep_eta = self.val_df['Lep_eta'] 
+        lep_eta = self.val_df['Lep_eta']
         for lep_type in ('muon','electron'):
             #sf = AnaDict.read_pickle(f'{self.outDir}{self.year}/lepton_sf_files/{lep_type}_sf_{self.year}.pkl')
             sf = AnaDict.read_pickle(f'{self.dataDir}lep_sf_files/{lep_type}_sf_{self.year}.pkl')
@@ -564,16 +565,16 @@ class processAna :
                 pt_bins =[float(bin_str.split(',')[0]) for bin_str in pt_keys] +  [float( pt_keys[-1].split(',')[1])]
                 eta_digi = pd.cut(np.clip(lep_eta,eta_bins[0]+eps,eta_bins[-1]-eps), bins=eta_bins, right=True, include_lowest=True,
                                   labels=sorted(eta_keys, key= lambda z : float(z.split(',')[0])))
-                pt_digi  = pd.cut(lep_pt.clip(pt_bins[0]+eps,pt_bins[-1]-eps), bins=pt_bins, right=True, include_lowest=True, 
+                pt_digi  = pd.cut(lep_pt.clip(pt_bins[0]+eps,pt_bins[-1]-eps), bins=pt_bins, right=True, include_lowest=True,
                                   labels=sorted(pt_keys, key= lambda z : float(z.split(',')[0])))
                 #lep_sf = pd.concat([eta_digi,pt_digi], axis='columns').apply(lambda x: sf[k][x[0]][x[1]]['values'], axis='columns')
                 lep_sf = np.array([(lambda x,y: np.array([sf[k][x][y]['values'], sf[k][x][y]['up']]))(x,y) for x,y in zip(eta_digi.values,pt_digi.values)]) # this should be propagating the error properly
                 #total_lep_sf *= lep_sf.to_numpy(dtype=float)
                 total_lep_sf[0] *= lep_sf[:,0]
                 lep_sf_err = abs(lep_sf[:,1] - lep_sf[:,0]) * lep_sf[:,0]
-                total_lep_sf[1] = total_lep_sf[0]*np.sqrt(np.power(lep_sf_err/lep_sf[:,0],2)+ np.power(total_lep_sf[1]/total_lep_sf[0],2)) 
+                total_lep_sf[1] = total_lep_sf[0]*np.sqrt(np.power(lep_sf_err/lep_sf[:,0],2)+ np.power(total_lep_sf[1]/total_lep_sf[0],2))
             self.val_df[f'{lep_type}_sf']      = np.where(self.val_df[f'passSingleLep{l_dict[lep_type]}']==1, total_lep_sf[0], 1)
-            if lep_type == 'muon': 
+            if lep_type == 'muon':
                 total_lep_sf[1] = np.sqrt(total_lep_sf[1]**2 + (.03*total_lep_sf[0])**2) # 3% additional error added to suslep mu
             self.val_df[f'{lep_type}_sf_up']   = np.where(self.val_df[f'passSingleLep{l_dict[lep_type]}']==1, total_lep_sf[1]+total_lep_sf[0], 1)
             self.val_df[f'{lep_type}_sf_down'] = np.where(self.val_df[f'passSingleLep{l_dict[lep_type]}']==1, total_lep_sf[0]-total_lep_sf[1], 1)
@@ -590,20 +591,20 @@ class processAna :
         lep_eff_up = digi.map(lambda k: eff[k]['up'])
         lep_eff_down = digi.map(lambda k: eff[k]['down'])
         return (lep_eff.to_numpy(dtype=float),lep_eff_up.to_numpy(dtype=float),lep_eff_down.to_numpy(dtype=float))
-     
+
     #@t2Run
     #def getBCbtagSF(self):
     #    sf = cfg.BC_btag_sf[self.year]['values']
     #    n_b = self.val_df['nBottoms_drLeptonCleaned'].clip(0,6)
     #    BCbtagSF = n_b.map(lambda k: sf[int(k)])
     #    self.val_df['BC_btagSF'] = BCbtagSF
-        
+
     def passHLT_by_year(self):
         self.val_df['pbt_elec'] = cfg.hlt_path['electron'][self.year](self.val_df)
         self.val_df['pbt_muon'] = cfg.hlt_path['muon'][self.year](self.val_df)
         self.val_df['isEleE']  = (self.val_df['pbt_elec'] & self.val_df['passSingleLepElec'])
         self.val_df['isMuonE'] = (self.val_df['pbt_muon'] & self.val_df['passSingleLepMu'])
-    
+
     def categorize_process(self):
         # categorize_processes in sample
         # for datacard making script
@@ -611,7 +612,7 @@ class processAna :
         # special rules for handling TTZH, TTZ_bb
         # TTBar, tt_bb, and Data
         self.val_df['process'] = ''
-        
+
         def handleTTZ():
             self.val_df['process'] = 'ttZ'
             if self.sample == 'TTZToQQ':
@@ -624,8 +625,8 @@ class processAna :
             self.add_tt_C_rate_unc()
         def handleTT_bb():
             self.val_df.loc[(self.val_df['tt_B'] != True),'process'] = 'non_tt_B'
-            self.val_df.loc[(self.val_df['tt_B'] == True),'process'] = 'tt_B' 
-            #self.val_df.loc[(self.val_df['tt_2b']== True),'process'] = 'tt_2b' # this is a subset of tt_B 
+            self.val_df.loc[(self.val_df['tt_B'] == True),'process'] = 'tt_B'
+            #self.val_df.loc[(self.val_df['tt_2b']== True),'process'] = 'tt_2b' # this is a subset of tt_B
             #self.val_df['LHE_HTIncoming'] = self.gen_df['LHE_HTIncoming'].flatten()
             #self.val_df['LHE_HT'] = self.gen_df['LHE_HT'].flatten()
 
@@ -634,7 +635,7 @@ class processAna :
         def handleTT_bb_EFT():
             self.val_df.loc[((self.val_df['tt_B'] != True)),'process'] = 'non_tt_B'
             self.val_df.loc[((self.val_df['has_Z'] == True)),'process'] = 'non_tt_B'
-            self.val_df.loc[((self.val_df['tt_B'] == True) & (self.val_df['has_Z'] == False)),'process'] = 'tt_B' 
+            self.val_df.loc[((self.val_df['tt_B'] == True) & (self.val_df['has_Z'] == False)),'process'] = 'tt_B'
             self.val_df['LHE_HTIncoming'] = self.gen_df['LHE_HTIncoming'].flatten()
             self.val_df['LHE_HT'] = self.gen_df['LHE_HT'].flatten()
             self.add_weights_to_ttbb()
@@ -651,18 +652,18 @@ class processAna :
         def handleOther():
             self.val_df['process'] = 'other'
         def handleEleData():
-            self.val_df.loc[((self.val_df['pbt_elec'] == True) & 
+            self.val_df.loc[((self.val_df['pbt_elec'] == True) &
                              (self.val_df['passSingleLepElec'] == True)),'process'] = 'Data'
             self.val_df.loc[(self.val_df['process'] != 'Data'), 'process'] = 'non_Data'
         def handleMuData():
-            self.val_df.loc[((self.val_df['pbt_muon'] == True) & 
+            self.val_df.loc[((self.val_df['pbt_muon'] == True) &
                              (self.val_df['passSingleLepMu'] == True)),'process'] =   'Data'
-            self.val_df.loc[(self.val_df['process'] != 'Data'), 'process'] = 'non_Data'        
+            self.val_df.loc[(self.val_df['process'] != 'Data'), 'process'] = 'non_Data'
         def handleRare():
             self.val_df['process'] = 'rare'
         def handleQCD():
             self.val_df['process'] = 'QCD'
-            
+
 
         sample_to_process = {'ttZ'                                  : handleTTZ,
                              'ttH'                                  : handleTTH,

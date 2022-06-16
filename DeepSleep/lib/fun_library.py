@@ -1,14 +1,14 @@
-#                      #  
+#                      #
 ##                    ##
-########################                               
+########################
 ### Library for      ###
 ### TTZ/H utility    ###
 ### functions        ###
-########################                               
-### written by:      ###                               
-### Bryan Caraway    ###                               
-########################                               
-##                    ##                                 
+########################
+### written by:      ###
+### Bryan Caraway    ###
+########################
+##                    ##
 #                      #
 
 ##
@@ -67,7 +67,7 @@ def ak_crosscleaned(eta1,phi1,eta2,phi2, cut) : # cross cleaned for arbitrary le
         iter1 = 0
         iter2 = 0
         a = c1.size
-        for i in range(a): 
+        for i in range(a):
             for ij in range(c2[i]):
                 for ii in range(c1[i]):
                     deta = e1[ii+iter1] - e2[ij+iter2]
@@ -86,20 +86,20 @@ def ak_crosscleaned(eta1,phi1,eta2,phi2, cut) : # cross cleaned for arbitrary le
     out =  aj.fromcounts(eta2.counts, njit_cc(*args_)).astype(bool)
     return out
 
-def argmatch(eta1,phi1,eta2,phi2, cut, m_idx=1): 
+def argmatch(eta1,phi1,eta2,phi2, cut, m_idx=1):
     # return index where 1 matches 2
     from awkward import JaggedArray as aj
     import math
     c1_ = np.array(eta1.counts).astype(int)
     c2_ = np.array(eta2.counts).astype(int)
-    out_ = -1 * np.ones(len(eta1.flatten())) 
+    out_ = -1 * np.ones(len(eta1.flatten()))
     args_ = eta1.flatten(), phi1.flatten(), c1_, eta2.flatten(), phi2.flatten(), c2_, cut, math.pi, out_, m_idx
     @njit(parallel=False)
     def njit_match(e1,p1,c1,e2,p2,c2,cut,pi,o,m_idx):
         iter1 = 0
         iter2 = 0
         a = int(c1.size)
-        for i in range(a): 
+        for i in range(a):
             for j1 in range(c1[i]):
                 m_iter = 0
                 for j2 in range(c2[i]):
@@ -121,7 +121,7 @@ def argmatch(eta1,phi1,eta2,phi2, cut, m_idx=1):
     #return aj.fromoffsets(eta1.offsets, njit_match(*args_)).astype(int)
     return aj.fromcounts(eta1.counts, njit_match(*args_)).astype(int)
 
-                                                
+
 
 def deltaR(eta1,phi1,eta2,phi2):
     try:
@@ -197,7 +197,7 @@ def deltaPhi(phi1, phi2):
         dphi = phi1-phi2
     dphi[((dphi > math.pi)   & (dphi != np.nan))] = dphi[((dphi > math.pi)   & (dphi != np.nan))] - 2*math.pi
     dphi[((dphi <= -math.pi) & (dphi != np.nan))] = dphi[((dphi <= -math.pi) & (dphi != np.nan))] + 2*math.pi
-    
+
     return dphi
 
 def calc_mtb(pt_, phi_, m_pt, m_phi):
@@ -229,7 +229,7 @@ def getZhbbBaseCuts(df_):
         (df_['n_b_outZh']   >= 2)             &
         #(df_['n_lb_outZh']   >= 2)             &
         #(df_['n_b_outZh']   >= 1)             &
-        (df_['n_ak4jets']   >= 5)             & 
+        (df_['n_ak4jets']   >= 5)             &
         (df_['Zh_bbvLscore'] >= 0.8)          &
         ( (df_['isEleE']==True) | (df_['isMuonE']==True)) & # pass sim trigger
         (df_['passNotHadLep'] == 1) & # might add
@@ -242,7 +242,7 @@ def getZhbbBaseCuts(df_):
 def getFakebbvlCuts(df_):
     control_cuts = (
         (df_['n_b_outZh']   == 1)             &
-        (df_['n_ak4jets']   >= 5)             & 
+        (df_['n_ak4jets']   >= 5)             &
         (df_['Zh_bbvLscore'] >= 0.0)          &
         ( (df_['isEleE']==True) | (df_['isMuonE']==True)) & # pass sim trigger
         (df_['passNotHadLep'] == 1) & # might add
@@ -260,8 +260,8 @@ def getFakebbvlWeights(df_, obj):
         * (df_['lep_trigeffsf'])
         * df_['lep_sf']
         #* df_['dak8md_bbvl_sf']
-        * df_['BTagWeight'] 
-        * df_['puWeight']  
+        * df_['BTagWeight']
+        * df_['puWeight']
         * (df_['PrefireWeight'] if obj.year != '2018' else 1.0)
     )
 def getWeightsWithEFT(df_, obj):
@@ -273,32 +273,35 @@ def getWeightsWithEFT(df_, obj):
         * df_['lep_sf']
         * (df_['EFT183'] if any('EFT' in s for s in df_['sample'].unique()) else 1.0)
         #* df_['dak8md_bbvl_sf']
-        * df_['BTagWeight'] 
-        * df_['puWeight']  
+        * df_['BTagWeight']
+        * df_['puWeight']
         * (df_['PrefireWeight'] if obj.year != '2018' else 1.0)
     )
 
 def getZhbbWeight(df_, year):
     import config.ana_cff as cfg
-    tot_weight = (df_['weight']* np.sign(df_['genWeight']) 
+    tot_weight = (df_['weight']* np.sign(df_['genWeight'])
                   * (np.where(df_['weight']>300,0,1))
                   ###* (cfg.Lumi['Total']/cfg.Lumi[year])
                   * df_['topptWeight']
                   * (df_['HEM_weight']  if year == '2018' else 1.0 )
                   #* (df_['lep_trigeffsf'])
                   #* df_['lep_sf']
+                  # Adds lumi scaling to MC weights
+                  #* (2000.0/cfg.Lumi['Total'])
                   * df_['electron_sf']
                   * df_['muon_sf']
                   * df_['electron_trigeffsf']
                   * df_['muon_trigeffsf']
-                  * df_['dak8md_bbvl_sf']
-                  * df_['BTagWeight'] 
-                  * df_['puWeight']  
+                  * df_['dak8md_bbvl_real_sf']
+                  * df_['dak8md_bbvl_fake_sf']
+                  * df_['BTagWeight']
+                  * df_['puWeight']
                   * (df_['PrefireWeight'] if year != '2018' else 1.0))
     return tot_weight
 
 #
-def weighted_quantile(values, quantiles, sample_weight=None, 
+def weighted_quantile(values, quantiles, sample_weight=None,
                       values_sorted=False, old_style=False):
     """ Very close to numpy.percentile, but supports weights.
     NOTE: quantiles should be in [0, 1]!
@@ -347,7 +350,7 @@ def clop_pear_ci(k,n,cl=0.68, return_error=False):
     #lo, hi = map(np.nan_to_num,[lo, hi])
     if return_error: return [np.nan_to_num(abs(lo-(k/n))), np.nan_to_num(abs(hi-(k/n)), nan=1.)]
     return [np.nan_to_num(lo),np.nan_to_num(hi, nan=1.)]
-    
+
 
 def getLaLabel(str_, altcolors=False):
     if '_201' in str_:
@@ -432,7 +435,7 @@ def getLaLabel(str_, altcolors=False):
                             'cyan'],
         'ttH_notgenm_Hbb':   [r'$\mathsf{t\bar{t}H}$ ${}_\text{unmatched}$', #[r't$\mathregular{\bar{t}}$H ${}_\mathrm{unmatched}$',
                             'tab:red'],
-        'TTZ':             [r't$\mathregular{\bar{t}}$Z', 
+        'TTZ':             [r't$\mathregular{\bar{t}}$Z',
                             'blue'],
         'TTZ_bb':          [r't$\mathregular{\bar{t}}$Ztobb_ded',
                             'orange'],
@@ -507,7 +510,7 @@ def getLaLabel(str_, altcolors=False):
         'ST_s_lep' : ['ST_s_lep', 'tab:brown'],
         'ST_t_top' : ['ST_t_top', 'tab:red'],
         'ST_t_antitop' : ['ST_t_antitop', 'tab:green'],
-        
+
     }
     la_str, col_str = la_col_map.get(str_,[str_,'k'])
     return [la_str, col_str]
@@ -527,7 +530,7 @@ def t2Run(func):
 
 def import_mpl_settings(i=1, width=1, length=1, disable_sansmath=False, no_figsize=False):
     import matplotlib.pyplot as plt
-    plt.rc("font", size=10, family="sans-serif", **{"sans-serif" : 
+    plt.rc("font", size=10, family="sans-serif", **{"sans-serif" :
                                                     #[u'TeX Gyre Heros', u'Helvetica', u'Arial', u'Palatino']})
                                                     [u'TeX Gyre Heros', u'Helvetica', u'Arial']})
     plt.rc("xaxis", labellocation='right')
@@ -548,8 +551,8 @@ def import_mpl_settings(i=1, width=1, length=1, disable_sansmath=False, no_figsi
         #r"\usepackage{sansmath}",
         #r"\sansmath",
     ])+('\n'+r'\usepackage{sansmath}'+'\n'+r'\sansmath' if not disable_sansmath else ''))
-    
-    
+
+
 
 def upperlefttext(s):
     trans = gca().transAxes + matplotlib.transforms.ScaledTranslation(3/72, -3/72, gcf().dpi_scale_trans)
@@ -573,7 +576,7 @@ def CMSlabel(fig=None, ax=None, opt=None, altax=None, altloc=False, lumi=None, f
         import config.ana_cff as cfg
         lumi = round(cfg.Lumi['Total'])
     cms_loc = (0,1) if not altloc else (1,1.10)
-        
+
     trans = ax0.transAxes + transforms.ScaledTranslation(0/72, 3/72, fig.dpi_scale_trans)
     ax0.text(*cms_loc, s=rf'\textbf{{CMS}} {{\footnotesize \textit{{{opt}}}}}', usetex=True,
              transform=trans, ha='left', va='baseline', fontsize=fontsize)
@@ -584,8 +587,8 @@ def CMSlabel(fig=None, ax=None, opt=None, altax=None, altloc=False, lumi=None, f
                      transform=trans, ha='right', va='baseline', fontsize=int(fontsize*.7))
         else:
             lumi = f'{lumi:.1f}' if float(lumi) < 100 else str(lumi)
-            #ax1.text(1, 1, rf"{{\footnotesize $\text{{{lumi}}}\,\text{{fb}}^{{\text{{-1}}}}$ (13 TeV)}}", 
-            ax1.text(1, 1, rf"{{ $\text{{{lumi}}}\,\text{{fb}}^{{\text{{-1}}}}$ (13 TeV)}}", 
+            #ax1.text(1, 1, rf"{{\footnotesize $\text{{{lumi}}}\,\text{{fb}}^{{\text{{-1}}}}$ (13 TeV)}}",
+            ax1.text(1, 1, rf"{{ $\text{{{lumi}}}\,\text{{fb}}^{{\text{{-1}}}}$ (13 TeV)}}",
                      usetex=True,
                      transform=trans, ha='right', va='baseline', fontsize=int(fontsize*.7))
 
@@ -604,7 +607,7 @@ def make_error_boxes(ax, xdata, ydata, xerror, yerror,  facecolor='r',
     ax.add_collection(pc)
 
 def save_pdf(pdf_name = 'dummy.pdf'):
-    import matplotlib.backends.backend_pdf as matpdf 
+    import matplotlib.backends.backend_pdf as matpdf
     import matplotlib.pyplot as plt
     import subprocess as sb
     sys.path.insert(1, sb.check_output(
@@ -614,7 +617,7 @@ def save_pdf(pdf_name = 'dummy.pdf'):
         raise NameError("Yo, dummy, put a filename here ''")
     def inner (func):
         def wrapper(*args,**kwargs):
-            pdf = matpdf.PdfPages(f"{sys.path[1]}pdf/{pdf_name}")  
+            pdf = matpdf.PdfPages(f"{sys.path[1]}pdf/{pdf_name}")
             func(*args, **kwargs) # doesnt return anything
             print(f"Saving figures to: {sys.path[1]}pdf/{pdf_name}")
             for fig_ in range(1, plt.gcf().number+1):
