@@ -19,14 +19,14 @@ dataDir           = _wdir+'data/'
 pdfDir            = _wdir+'pdf/'
 #### NanoAODv7 PostProcessed Sample Directory ####
 preproc_dir = '/cms/data/store/user/bcaraway/NanoAODv7/PreProcessed/'
-postproc_dir = '/cms/data/store/user/bcaraway/NanoAODv7/PostProcessed/'
-postSkim_dir = '/cms/data/store/user/ttxeft/NanoAODv7/Skim/'
-pdfNtuples_dir = '/cms/data/store/user/ttxeft/NanoAODv7/PDF/'
+postproc_dir = '/cms/data/store/mc/RunIISummer20UL17NanoAODv9/'
+postSkim_dir = '/cms/data/store/user/jsamudio/NanoAODv7/Skim/'
+pdfNtuples_dir = '/cms/data/store/user/jsamudio/NanoAODv7/PDF/'
 # NN dir
 DNNoutputDir      = dataDir+'/NN_files/'
 # Overhead #
 import os
-if   os.path.exists('/cms/data/store/user/ttxeft/') : # test to see if on kodiak
+if   os.path.exists('/cms/data/store/user/jsamudio/') : # test to see if on kodiak
     file_path         = postSkim_dir # for kodiak
 elif os.path.exists('/eos/uscms/') or 'condor' in _cdir: # test to see if on lpc will need to fix for condor on kodiak i think
     file_path        = 'root://cmseos.fnal.gov//store/user/bcaraway/skimAnaSamples/'
@@ -64,7 +64,7 @@ tt_bb_sys         = [ 'ttbb_hdampUp','ttbb_hdampDown', ]
 #jec_variations    = [jtype+jec for jec in ['JESUp','JESDown','JERUp','JERDown'] for jtype in ['ak4','ak8']]
 jecs              = [jec+y for jec in ['jesRelativeSample','jesHF' , 'jesAbsolute', 'jesEC2', 'jesBBEC1'] for y in Years] + \
                     ['jesHF' , 'jesAbsolute', 'jesEC2', 'jesBBEC1', 'jesRelativeBal', 'jesFlavorQCD',
-                     'jesHEMIssue',  # 2018 only 
+                     'jesHEMIssue',  # 2018 only
                      'ak4jer','ak8jer', # jer
                      'jms','jmr'] # puppi sdm corr
 jec_variations    = [jec+ud for jec in jecs for ud in ['Up','Down']]
@@ -87,7 +87,7 @@ Lumi              = {
     '2018postHEM': 38.6,
     'run2': 137.596,
     'Total': 137.596
-                  } 
+                  }
 goodLumis_file   = {
     '2016':dataDir+'/good_lumis/'+'Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt', # re-reco
     '2017':dataDir+'/good_lumis/'+'Cert_294927-306462_13TeV_EOY2017ReReco_Collisions17_JSON.txt', # re-reco
@@ -101,48 +101,48 @@ goodLumis_file   = {
 ##### TTZ, Z to bb CONFIG #####
 ZHbbFitMinJets = 4
 ZHbbFitMaxJets = 100
-ZHbb_btagWP    = {'2016': 0.6321, # Med for 2016
-                  '2017': 0.4941, # Med for 2017
-                  '2018': 0.4148  # Med for 2018
+ZHbb_btagWP    = {'2016': 0.2489, # Med for 2016
+                  '2017': 0.3040, # Med for 2017
+                  '2018': 0.2783  # Med for 2018
                   }
-ZHbb_loosebtagWP    = {'2016': 0.2217, # Loose for 2016
-                       '2017': 0.1522, # Loose for 2017
-                       '2018': 0.1241  # Loose for 2018
+ZHbb_loosebtagWP    = {'2016': 0.0480, # Loose for 2016
+                       '2017': 0.0532, # Loose for 2017
+                       '2018': 0.0490  # Loose for 2018
                    }
 #
 hlt_path = {
-    'muon'    :{ '2016': (lambda x : ((x['HLT_IsoMu24']) | 
-                                      (x['HLT_IsoTkMu24']) | 
-                                      (x['HLT_Mu50']) | 
+    'muon'    :{ '2016': (lambda x : ((x['HLT_IsoMu24']) |
+                                      (x['HLT_IsoTkMu24']) |
+                                      (x['HLT_Mu50']) |
                                       (x['HLT_TkMu50']))),
 
-                 '2017': (lambda x : ((x['HLT_IsoMu27']) | 
-                                      (x['HLT_Mu50']) | 
-                                      (x['HLT_OldMu100']) | 
+                 '2017': (lambda x : ((x['HLT_IsoMu27']) |
+                                      (x['HLT_Mu50']) |
+                                      (x['HLT_OldMu100']) |
                                       (x['HLT_TkMu100']))),
 
-                 '2018': (lambda x : ((x['HLT_IsoMu24']) | 
-                                      (x['HLT_Mu50']) | 
-                                      (x['HLT_OldMu100']) | 
+                 '2018': (lambda x : ((x['HLT_IsoMu24']) |
+                                      (x['HLT_Mu50']) |
+                                      (x['HLT_OldMu100']) |
                                       (x['HLT_TkMu100']))),
              },
-    'electron':{ '2016': (lambda x : ((x['HLT_Ele27_WPTight_Gsf']) | 
-                                      (x['HLT_Photon175']) | 
-                                      (x['HLT_Ele50_CaloIdVT_GsfTrkIdT_PFJet165']) | 
-                                      (x['HLT_Ele115_CaloIdVT_GsfTrkIdT']) | 
+    'electron':{ '2016': (lambda x : ((x['HLT_Ele27_WPTight_Gsf']) |
+                                      (x['HLT_Photon175']) |
+                                      (x['HLT_Ele50_CaloIdVT_GsfTrkIdT_PFJet165']) |
+                                      (x['HLT_Ele115_CaloIdVT_GsfTrkIdT']) |
                                       (x['HLT_Ele45_CaloIdVT_GsfTrkIdT_PFJet200_PFJet50']))),
 
-                 '2017': (lambda x : ((x['HLT_Ele32_WPTight_Gsf_L1DoubleEG']) | 
-                                      (x['HLT_Ele35_WPTight_Gsf']) | 
-                                      (x['HLT_Photon200']) | 
-                                      (x['HLT_Ele115_CaloIdVT_GsfTrkIdT']) | 
+                 '2017': (lambda x : ((x['HLT_Ele32_WPTight_Gsf_L1DoubleEG']) |
+                                      (x['HLT_Ele35_WPTight_Gsf']) |
+                                      (x['HLT_Photon200']) |
+                                      (x['HLT_Ele115_CaloIdVT_GsfTrkIdT']) |
                                       (x['HLT_Ele50_CaloIdVT_GsfTrkIdT_PFJet165']) #|
                                       #(x['HLT_Ele28_eta2p1_WPTight_Gsf_HT150']) # trying this out
                                   )),
 
-                 '2018': (lambda x : ((x['HLT_Ele32_WPTight_Gsf']) | 
-                                      (x['HLT_Ele115_CaloIdVT_GsfTrkIdT']) | 
-                                      (x['HLT_Ele50_CaloIdVT_GsfTrkIdT_PFJet165']) | 
+                 '2018': (lambda x : ((x['HLT_Ele32_WPTight_Gsf']) |
+                                      (x['HLT_Ele115_CaloIdVT_GsfTrkIdT']) |
+                                      (x['HLT_Ele50_CaloIdVT_GsfTrkIdT_PFJet165']) |
                                       (x['HLT_Photon200']) #|
                                       #(x['HLT_Ele28_eta2p1_WPTight_Gsf_HT150']) # trying this out
                                   ))
@@ -157,17 +157,17 @@ lep_sel_vars = {'muon'    : ['Muon_pt','Muon_eta','Muon_phi','Muon_mass',
                              'Muon_miniPFRelIso_all','Muon_mediumId', # might just need to add Muon_sip3d, Muon_softId, Muon_charge, and Muon_mediumPromptId
                              'Muon_tightId','Muon_mediumPromptId',"Muon_dxy","Muon_dz","Muon_sip3d","Muon_softId","Muon_charge"],#'Muon_FlagId'],
                 'electron': ['Electron_pt','Electron_eta','Electron_phi','Electron_mass',
-                             'Electron_miniPFRelIso_all', 'Electron_cutBasedNoIso','Electron_sip3d','Electron_charge']}
+                             'Electron_miniPFRelIso_all', 'Electron_cutBasedNoIso','Electron_sip3d','Electron_charge','Electron_vidNestedWPBitmap','Electron_cutBased']}
 
-lep_sel =      {'muon': (lambda x: ((x['Muon_pt'] > 30)        & 
+lep_sel =      {'muon': (lambda x: ((x['Muon_pt'] > 30)        &
                                     (abs(x['Muon_eta']) < 2.4) &
-                                    (x['Muon_mediumId'] >= 1)    & 
+                                    (x['Muon_mediumId'] >= 1)    &
                                     (x['Muon_sip3d'] < 4) &
                                     (x['Muon_miniPFRelIso_all'] < 0.2) )),
 
-                'nosip3d_muon': (lambda x: ((x['Muon_pt'] > 30)        & 
+                'nosip3d_muon': (lambda x: ((x['Muon_pt'] > 30)        &
                                             (abs(x['Muon_eta']) < 2.4) &
-                                            (x['Muon_mediumId'] >= 1)    & 
+                                            (x['Muon_mediumId'] >= 1)    &
                                             #(x['Muon_sip3d'] < 4) &
                                             (x['Muon_miniPFRelIso_all'] < 0.2) )),
 
@@ -190,7 +190,7 @@ lep_sel =      {'muon': (lambda x: ((x['Muon_pt'] > 30)        &
             }
 
 ana_vars = {
-    'ak4vars'    : ['Jet_btagDeepB','Jet_puId','Jet_jetId',],
+    'ak4vars'    : ['Jet_btagDeepB','Jet_puId','Jet_jetId','Jet_btagDeepFlavB'],
     'ak4mcvars'  : ['Jet_btagSF_deepcsv_shape',
                     'Jet_btagSF_deepcsv_shape_up_jes','Jet_btagSF_deepcsv_shape_down_jes',
                     'Jet_btagSF_deepcsv_shape_up_hf','Jet_btagSF_deepcsv_shape_down_hf',
@@ -214,13 +214,14 @@ ana_vars = {
                     'FatJet_msoftdrop_nom'+LC,
                     'FatJet_corr_JER',
                     #            ],
-                    'FatJet_subJetIdx1','FatJet_subJetIdx2'],
+                    'FatJet_subJetIdx1','FatJet_subJetIdx2',
+                    'FatJet_particleNetMD_Xbb','FatJet_particleNet_mass'],
     'ak8lvec'    : {'TLVars_nom' :['FatJet_pt_nom', 'FatJet_eta', 'FatJet_phi', 'FatJet_mass_nom'],
                     'TLVars'   :['FatJet_pt', 'FatJet_eta', 'FatJet_phi', 'FatJet_mass']},
     'sjvars'     : ['SubJet_pt','SubJet_eta','SubJet_phi','SubJet_mass','SubJet_rawFactor'],
     'genak8jets' : ['GenJetAK8_eta','GenJetAK8_phi',],
     'gensubjets' : ['SubGenJetAK8_pt','SubGenJetAK8_eta','SubGenJetAK8_phi','SubGenJetAK8_mass',],
-    'genpvars'   : ['GenPart_pt', 'GenPart_eta', 'GenPart_phi', 'GenPart_mass', 
+    'genpvars'   : ['GenPart_pt', 'GenPart_eta', 'GenPart_phi', 'GenPart_mass',
                     'GenPart_status', 'GenPart_pdgId', 'GenPart_genPartIdxMother',
                     'genTtbarId','LHE_HT','LHE_HTIncoming',], # event level identifier for ttbar+bb
 
@@ -234,7 +235,7 @@ ana_vars = {
     'filters_year' : {'2016': [], '2017':['Flag_ecalBadCalibFilterV2'], '2018':['Flag_ecalBadCalibFilterV2']},
     # these are MC only
     'sysvars_mc'      : ['genWeight','puWeight',
-                         'puWeightUp','puWeightDown', 
+                         'puWeightUp','puWeightDown',
                          'pdfWeight_Up','pdfWeight_Down',],
     'sysvars_2016'    : ['PrefireWeight','PrefireWeight_Up','PrefireWeight_Down'],
     'sysvars_2017'    : ['PrefireWeight','PrefireWeight_Up','PrefireWeight_Down'],
@@ -275,19 +276,19 @@ nodak8md_dnn_ZH_vars = [
     'Zh_closeb_invM',#'Zh_closeq_invM',
     'n_ak8jets', 'n_ak4jets','n_ak8_Zhbb',
     'outZh_max_ak8sdM',
-    'outZh_b12_m', 'outZh_b12_dr', 
+    'outZh_b12_m', 'outZh_b12_dr',
     'ht_b', 'ht_outZh',
     #
     'ak4_bestb_inZH',
     'ak4_worstb_inZH',
     #
-    'nonZhbb_q1_dr', 
+    'nonZhbb_q1_dr',
     'nonZhbb_b1_dr',
     'inZhb_outZhb_dr',
     #
-    'Zh_l_dr', 'Zh_l_invM_sd', 
+    'Zh_l_dr', 'Zh_l_invM_sd',
     'l_b1_invM','l_b2_invM',
-    'l_b1_dr','l_b2_dr', 
+    'l_b1_dr','l_b2_dr',
     #
     'spher','aplan',
     'n_b_inZh', 'n_q_inZh',
@@ -315,21 +316,21 @@ nodak8md_old_ZH_vars = [
     'Zh_closeb_invM',#'Zh_closeq_invM',
     'n_ak8jets', 'n_ak4jets','n_ak8_Zhbb',
     'outZh_max_ak8sdM',
-    'outZh_b12_m', 'outZh_b12_dr', 
+    'outZh_b12_m', 'outZh_b12_dr',
     'ht_b', 'ht_outZh',
     #
     'n_Zh_btag_sj',
-    'Zh_bestb_sj', 
+    'Zh_bestb_sj',
     'Zh_worstb_sj',
     #
-    'nonZhbb_q1_dr', 
+    'nonZhbb_q1_dr',
     'nonZhbb_b1_dr',
     'inZhb_outZhb_dr',
     #
-    'Zh_l_dr', 'Zh_l_invM_sd', 
+    'Zh_l_dr', 'Zh_l_invM_sd',
     'l_b1_invM','l_b2_invM',
     'l_b1_dr',
-    'l_b2_dr', 
+    'l_b2_dr',
     #
     'spher','aplan',
     'n_b_inZh', 'n_q_inZh',
@@ -352,12 +353,12 @@ reduced1p25genm_vars = reduced1p5genm_vars + [
     'outZH_b2_score', 'outZh_q1_btag', 'outZh_q2_btag', 'ak4_worstb_inZH',
     'nonZhbb_b1_dr', 'l_b1_dr', 'n_b_outZh'
 ]
- 
+
 #reduced inputs: 28, with thresh: 1
 reduced1p0genm_vars =  reduced1p25genm_vars + [
     'ZH_b1qq_dr', 'ht_outZh', 'nonZhbb_q1_dr', 'l_b2_invM', 'l_b2_dr'
 ]
-      
+
 ## full inputs:   50
 #withbbvl_dnn_ZHgenm_vars = reduced1p0genm_vars + [
 #    'outZH_b2_pt', 'outZH_q_q_dr_nearb1', 'outZH_q_q_dr_nearb2',
@@ -367,8 +368,8 @@ reduced1p0genm_vars =  reduced1p25genm_vars + [
 #    'outZh_max_ak8sdM', 'ht_b', 'inZhb_outZhb_dr', 'Zh_l_invM_sd', 'aplan',
 #    'n_b_inZh', 'n_q_outZh', 'Zh_bbvLscore'
 #]
- 
-# ===== ---- OLD VARS (but still relevent) ---- ===== # 
+
+# ===== ---- OLD VARS (but still relevent) ---- ===== #
 
 oldreduced1p5genm_vars = [ # 19 inputs
     'outZH_b1_pt', 'outZH_b1_score', 'outZh_q1_pt', 'outZh_q2_pt',
@@ -388,4 +389,4 @@ oldreduced1p0genm_vars = oldreduced1p25genm_vars + [ # 31 inputs
     'n_b_inZh'
 ]
 
-    
+
