@@ -18,10 +18,10 @@ master_file_path  = _wdir+'files/'
 dataDir           = _wdir+'data/'
 pdfDir            = _wdir+'pdf/'
 #### NanoAODv7 PostProcessed Sample Directory ####
-preproc_dir = '/cms/data/store/mc/RunIISummer20UL17NanoAODv9/'
-postproc_dir = '/cms/data/store/user/jsamudio/NanoAODv9/PostProcessed'
-postSkim_dir = '/cms/data/store/user/jsamudio/NanoAODv9/Skim/'
-pdfNtuples_dir = '/cms/data/store/user/jsamudio/NanoAODv9/PDF/'
+preproc_dir = '/cms/data/store/user/bcaraway/NanoAODv7/PreProcessed/'
+postproc_dir = '/cms/data/store/mc/RunIISummer20UL17NanoAODv9/'
+postSkim_dir = '/cms/data/store/user/jsamudio/NanoAODv7/Skim/'
+pdfNtuples_dir = '/cms/data/store/user/jsamudio/NanoAODv7/PDF/'
 # NN dir
 DNNoutputDir      = dataDir+'/NN_files/'
 # Overhead #
@@ -190,7 +190,7 @@ lep_sel =      {'muon': (lambda x: ((x['Muon_pt'] > 30)        &
             }
 
 ana_vars = {
-    'ak4vars'    : ['Jet_btagDeepB','Jet_puId','Jet_jetId','Jet_btagDeepFlavB', 'Jet_pt', 'Jet_eta'],
+    'ak4vars'    : ['Jet_btagDeepB','Jet_puId','Jet_jetId','Jet_btagDeepFlavB'],
     #'ak4mcvars'  : ['Jet_btagSF_deepcsv_shape',
                     #'Jet_btagSF_deepcsv_shape_up_jes','Jet_btagSF_deepcsv_shape_down_jes',
                     #'Jet_btagSF_deepcsv_shape_up_hf','Jet_btagSF_deepcsv_shape_down_hf',
@@ -212,10 +212,11 @@ ana_vars = {
                     'FatJet_deepTagMD_WvsQCD', 'FatJet_deepTag_WvsQCD',
                     'FatJet_msoftdrop'+LC,
                     #'FatJet_msoftdrop_nom'+LC,
+                    'FatJet_corr_JER',
                     #            ],
                     'FatJet_subJetIdx1','FatJet_subJetIdx2',
-                    'FatJet_particleNetMD_Xbb','FatJet_particleNet_mass', 'FatJet_pt'],
-    'ak8lvec'    : {'TLVars_nom' :['FatJet_eta', 'FatJet_phi', ],
+                    'FatJet_particleNetMD_Xbb','FatJet_particleNet_mass'],
+    'ak8lvec'    : {'TLVars_nom' :['FatJet_pt_nom', 'FatJet_eta', 'FatJet_phi', 'FatJet_mass_nom'],
                     'TLVars'   :['FatJet_pt', 'FatJet_eta', 'FatJet_phi', 'FatJet_mass']},
     'sjvars'     : ['SubJet_pt','SubJet_eta','SubJet_phi','SubJet_mass','SubJet_rawFactor'],
     'genak8jets' : ['GenJetAK8_eta','GenJetAK8_phi',],
@@ -230,8 +231,8 @@ ana_vars = {
                     'PV_npvsGood','run','luminosityBlock','event'],
     'filters_all'    : ['Flag_goodVertices','Flag_globalSuperTightHalo2016Filter','Flag_HBHENoiseFilter',
                         'Flag_HBHENoiseIsoFilter','Flag_EcalDeadCellTriggerPrimitiveFilter',
-                        'Flag_BadPFMuonFilter','Flag_eeBadScFilter','Flag_BadPFMuonDzFilter'],
-    'filters_year' : {'2016': [], '2017':['Flag_ecalBadCalibFilter'], '2018':['Flag_ecalBadCalibFilter']},
+                        'Flag_BadPFMuonFilter','Flag_eeBadScFilter'],
+    'filters_year' : {'2016': [], '2017':['Flag_ecalBadCalibFilterV2'], '2018':['Flag_ecalBadCalibFilterV2']},
     # these are MC only
     'sysvars_mc'      : ['genWeight','puWeight',
                          'puWeightUp','puWeightDown',

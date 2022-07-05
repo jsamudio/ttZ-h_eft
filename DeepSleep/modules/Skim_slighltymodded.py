@@ -62,29 +62,28 @@ class Skim :
         self.tree     = self.set_tree_from_roofile(self.roofile)
         # handle pdfweight calc/matching if needed
         #if not self.isData:
-        #df_helper = PDFHelper(self) # currently does nothing for EFT samples
+        #pdf_helper = PDFHelper(self) # currently does nothing for EFT samples
         # prepMeta metadata factory
-        self.Meta = SkimMeta(self.sample, self.year, self.isData, self.tree, self.jec_sys) #pdf=pdf_helper.pdfweights)
+        #self.Meta = SkimMeta(self.sample, self.year, self.isData, self.tree, self.jec_sys, pdf=pdf_helper.pdfweights)
         # define event information
         # apply in house jmr
         self.fatjets   = self.build_dict(['FatJet_pt','FatJet_msoftdrop','FatJet_particleNet_mass']) # just in case jec
         self.tmp_fatjets = self.build_dict(cfg.ana_vars['ak8vars']+cfg.ana_vars['ak8lvec']['TLVars_nom'], with_interp=False)
-        #self.tmp_fatjets['FatJet_pt'] = self.tmp_fatjets.pop('FatJet_pt_nom') # rename this variable
+        self.tmp_fatjets['FatJet_pt'] = self.tmp_fatjets.pop('FatJet_pt_nom') # rename this variable
         self.subjets    = self.build_dict(cfg.ana_vars['sjvars'])
         self.genfatjets = self.build_dict(cfg.ana_vars['genak8jets'])
         self.gensubjets = self.build_dict(cfg.ana_vars['gensubjets'])
         #ak8jmsjmr_helper(self, self.jec_sys) # apply corrections to softdrop mass
         self.fatjets = self.tmp_fatjets  # hand over correct ak8 info
-        #if __name__ == "__main__": # if doing testing
-        #    self.fatjets['FatJet_msoftdrop'] = self.tmp_fatjets["FatJet_msoftdrop_altnosmear"]
-        #del self.subjets, self.genfatjets, self.gensubjets, self.tmp_fatjets
+        if __name__ == "__main__": # if doing testing
+            self.fatjets['FatJet_msoftdrop'] = self.tmp_fatjets["FatJet_msoftdrop_altnosmear"]
+        del self.subjets, self.genfatjets, self.gensubjets, self.tmp_fatjets
         ## end of in-house JMR
         #
         self.jets      = self.build_dict(
-            cfg.ana_vars['ak4vars']+cfg.ana_vars['ak4lvec']['TLVars'], with_interp=False
-           # (
-               # [] if self.isData else (cfg.ana_vars['ak4mcvars'] if self.jec_sys is None else ['Jet_btagSF_deepcsv_shape'])
-            )
+            cfg.ana_vars['ak4vars']+cfg.ana_vars['ak4lvec']['TLVars']+(
+                [] if self.isData else (cfg.ana_vars['ak4mcvars'] if self.jec_sys is None else ['Jet_btagSF_deepcsv_shape'])
+            ))
         self.electrons = self.build_dict(cfg.lep_sel_vars['electron'])
         self.calc_cutbasednoiso()
         self.muons     = self.build_dict(cfg.lep_sel_vars['muon'])
@@ -92,10 +91,10 @@ class Skim :
             (cfg.ana_vars['sysvars_mc']+cfg.ana_vars[f'sysvars_{self.year}'])
             if not self.isData else []))
         #print(len(self.events['genWeight']))
-        #other things like gen info
+        # other things like gen info
         if not self.isData:
             self.geninfo    = self.build_dict(cfg.ana_vars['genpvars'])
-            #self.lheweights = self.build_dict(cfg.ana_vars['lheWeights'])
+            self.lheweights = self.build_dict(cfg.ana_vars['lheWeights'])
 
         self.hlt        = self.build_dict(cfg.ana_vars['dataHLT_all']+cfg.ana_vars[f'dataHLT_{self.year}'])
         #self.subjets    = self.build_dict(cfg.ana_vars['ak8sj'])
@@ -103,9 +102,6 @@ class Skim :
         self.filters    = self.build_dict(cfg.ana_vars['filters_all']+cfg.ana_vars['filters_year'][self.year])
         #del self.precut # need later i think
         self.f.close()
-
-        #print(self.jets(abs(self.jets['Jet_eta']) < 2.4))
-        #print(self.jets[self.jets['Jet_eta'] > 1])
         # ===================== #
         # apply object criteria
         self.soft_electrons = self.electrons[self.is_a_soft_electron()]
@@ -126,11 +122,11 @@ class Skim :
         self.events          = self.events[        self.event_mask]
         if not self.isData:
             self.geninfo    = self.geninfo[   self.event_mask]
-            #self.lheweights = self.lheweights[self.event_mask]
+            self.lheweights = self.lheweights[self.event_mask]
         self.hlt        = self.hlt[       self.event_mask]
         # might drop subjets
         #self.subjets    = self.subjets[   self.event_mask]
-        #print(self.jets['Jet_pt'])
+        #print(len(self.events['genWeight']))
         '''
         add interesting info to events:
         (lepton pt, eta, phi , etc...)
@@ -140,8 +136,8 @@ class Skim :
         '''
         self.handle_multiplicity_HEM_info()
         #if not self.isData:
-            #self.handle_lheweights()
-            #self.Meta.add_btagweightsf_counts(self.jets, self.events, self.geninfo)
+        #    self.handle_lheweights()
+        #    self.Meta.add_btagweightsf_counts(self.jets, self.events, self.geninfo)
         self.handle_lep_info()
         #
         self.btag_event_mask = self.get_b_tag_eventmask()
@@ -149,16 +145,14 @@ class Skim :
         self.fatjets         = self.fatjets[       self.btag_event_mask]
         #self.subjets         = self.subjets[       self.btag_event_mask]
         self.soft_electrons  = self.soft_electrons[self.btag_event_mask]
-        #print(sum(self.soft_electrons['Electron_cutbasedNoIso'].counts))
         self.soft_muons      = self.soft_muons[    self.btag_event_mask]
         self.hlt             = self.hlt[           self.btag_event_mask]
         self.events          = self.events [       self.btag_event_mask]
-        print(sum(self.events['event']))
-        #if not self.isData:
-            #self.geninfo = self.geninfo[  self.btag_event_mask]
+        if not self.isData:
+            self.geninfo = self.geninfo[  self.btag_event_mask]
             # add full list of weights to metaData and apply cuts
-            #pdf_helper.apply_cuts(self)
-            #pdf_helper.add_pdfweights_to_events(self)
+            pdf_helper.apply_cuts(self)
+            pdf_helper.add_pdfweights_to_events(self)
         #
     #
     def get_skim(self):
@@ -174,7 +168,7 @@ class Skim :
         __out_dict['events'] = pd.DataFrame.from_dict({k:v for k,v in events.items()})
         if not self.isData:
             __out_dict['gen'] = self.geninfo
-            __out_dict['metaData'] = self.Meta.get_metadata()
+           # __out_dict['metaData'] = self.Meta.get_metadata()
         # close root file
         #self.f.close()
         #
@@ -182,29 +176,29 @@ class Skim :
 
 
     # === functions to add info to events === #
-#    def handle_lheweights(self):
-#        ps_w  = self.lheweights['PSWeight'].pad(4).fillna(1)
-#        try:
-#            sc_w  = self.lheweights['LHEScaleWeight'].pad(9).fillna(1)
-#        except:
-#            sc_w = np.ones(shape=(len(ps_w),9))
-#
-#        self.events['ISR_Up']   = ps_w[:,2]
-#        self.events['ISR_Down'] = ps_w[:,0]
-#        self.events['FSR_Up']   = ps_w[:,3]
-#        self.events['FSR_Down'] = ps_w[:,1]
-#        #
-#        self.events['mu_r_Up']    = sc_w[:,7]
-#        self.events['mu_r_Down']  = sc_w[:,1]
-#        self.events['mu_f_Up']    = sc_w[:,5]
-#        self.events['mu_f_Down']  = sc_w[:,3]
-#        self.events['mu_rf_Up']   = sc_w[:,8]
-#        self.events['mu_rf_Down'] = sc_w[:,0]
-#        #
-#        if 'EFT' in self.sample:
-#            eft_w =  self.lheweights['LHEReweightingWeight'].pad(184).fillna(1)
-#            for i in range(184):
-#                self.events[f'EFT{i}'] = eft_w[:,i]
+    def handle_lheweights(self):
+        ps_w  = self.lheweights['PSWeight'].pad(4).fillna(1)
+        try:
+            sc_w  = self.lheweights['LHEScaleWeight'].pad(9).fillna(1)
+        except:
+            sc_w = np.ones(shape=(len(ps_w),9))
+
+        self.events['ISR_Up']   = ps_w[:,2]
+        self.events['ISR_Down'] = ps_w[:,0]
+        self.events['FSR_Up']   = ps_w[:,3]
+        self.events['FSR_Down'] = ps_w[:,1]
+        #
+        self.events['mu_r_Up']    = sc_w[:,7]
+        self.events['mu_r_Down']  = sc_w[:,1]
+        self.events['mu_f_Up']    = sc_w[:,5]
+        self.events['mu_f_Down']  = sc_w[:,3]
+        self.events['mu_rf_Up']   = sc_w[:,8]
+        self.events['mu_rf_Down'] = sc_w[:,0]
+        #
+        if 'EFT' in self.sample:
+            eft_w =  self.lheweights['LHEReweightingWeight'].pad(184).fillna(1)
+            for i in range(184):
+                self.events[f'EFT{i}'] = eft_w[:,i]
 
 
     #
@@ -237,7 +231,7 @@ class Skim :
         self.events.update({
             'n_ak4jets': self.jets['Jet_pt'].counts,
             'n_ak8jets': self.fatjets['FatJet_pt'].counts,
-            'nBottoms' : self.jets['Jet_pt'][(self.jets['Jet_btagDeepFlavB'] > cfg.ZHbb_btagWP[self.year])].counts
+            'nBottoms' : self.jets['Jet_pt'][(self.jets['Jet_btagDeepB'] > cfg.ZHbb_btagWP[self.year])].counts
         })
         if self.year == '2018':
             if not self.isData: # is MC
@@ -268,17 +262,16 @@ class Skim :
             ( self.jets['Jet_jetId'] >= 2) &
             ( self.is_lep_cleaned(self.electrons,'Electron',self.jets,'Jet',0.4) == True ) &
             ( self.is_lep_cleaned(self.muons,'Muon',self.jets,'Jet',0.4) == True )
-
         )
     #
     def is_a_fatjet(self):
         return (
             (self.fatjets['FatJet_pt'] >  200) &
             (abs(self.fatjets['FatJet_eta']) < 2.4) &
-            #(self.fatjets['FatJet_msoftdrop'] >= 50) &
-            #(self.fatjets['FatJet_msoftdrop'] <= 200) &
-            (self.fatjets['FatJet_particleNet_mass'] >= 50) &
-            (self.fatjets['FatJet_particleNet_mass'] <= 200) &
+            (self.fatjets['FatJet_msoftdrop'] >= 50) &
+            (self.fatjets['FatJet_msoftdrop'] <= 200) &
+            #(self.fatjets['FatJet_particlenet_mass'] >= 50) &
+            #(self.fatjets['FatJet_particlenet_mass'] <= 200) &
             ( self.fatjets['FatJet_jetId'] >= 2) &
             ( self.is_lep_cleaned(self.electrons,'Electron',self.fatjets,'FatJet',0.8) == True ) &
             ( self.is_lep_cleaned(self.muons,'Muon',self.fatjets,'FatJet',0.8) == True )
@@ -287,15 +280,13 @@ class Skim :
     #
     def calc_cutbasednoiso(self):
         bmap = self.electrons['Electron_vidNestedWPBitmap']
-        bmapcount = bmap.counts
-        flatbit = bmap.flatten()
-        flatbit = np.array(flatbit)
-        noiso_storage = (flatbit >> 0) & 7
+        bmapcount = ak.num(bmap)
+        flatbit = ak.flatten(bmap)
+        noiso_storage = flatbit >> 0 & 7
         for i in [3, 6, 9, 12, 15, 18, 24, 27]:
             noiso_storage = np.minimum(noiso_storage, flatbit >> i & 7)
-        cutbasednoiso = aj.fromcounts(bmapcount, noiso_storage)
+        cutbasednoiso = ak.unflatten(noiso_storage, bmapcounts)
         self.electrons['Electron_cutBasedNoIso'] = cutbasednoiso
-        #print(self.electrons['Electron_cutBasedNoIso'])
         del self.electrons['Electron_vidNestedWPBitmap']
 
     def is_a_electron(self):
@@ -323,9 +314,8 @@ class Skim :
                 (self.filters['Flag_HBHENoiseIsoFilter']                 == 1)       &
                 (self.filters['Flag_EcalDeadCellTriggerPrimitiveFilter'] == 1)       &
                 (self.filters['Flag_BadPFMuonFilter']                    == 1)       &
-                (self.filters['Flag_BadPFMuonDzFilter']                  == 1)       &
                 ((self.filters['Flag_eeBadScFilter'] == 1) if self.isData else True) &
-                ((self.filters['Flag_ecalBadCalibFilter'] == 1)
+                ((self.filters['Flag_ecalBadCalibFilterV2'] == 1)
                  if (self.year == '2017' or self.year == '2018') else True )
         )
     #
@@ -436,13 +426,11 @@ if __name__ == '__main__':
     #sample = "ttHTobb"
     #sample = 'TTbb_2L2Nu'
     #test_file = '/cms/data/store/user/bcaraway/NanoAODv7/PostProcessed//2017/TTbb_2L2Nu_2017/prod2017MC_v7_NANO_2_Skim_11.root'
-    sample= 'TTZToBB'
+    #sample= 'TTZToBB'
     #test_file   = '/cms/data/store/user/bcaraway/NanoAODv7/PostProcessed/2016/TTZToBB_2016/CA01B0AA-229F-E446-B4FE-9F2EA2969FAB_Skim_2.root'
-    #sample = 'TTToHa'
-    #test_file = '/cms/data/store/user/bcaraway/NanoAODv7/PostProcessed//2016/ttHToNonbb_2016/6D0E1ED8-6F95-FE45-8967-96805FBF1818_Skim_25.root'
+    sample = 'ttHToNonbb'
+    test_file = '/cms/data/store/user/bcaraway/NanoAODv7/PostProcessed//2016/ttHToNonbb_2016/6D0E1ED8-6F95-FE45-8967-96805FBF1818_Skim_25.root'
     #test_file = '/cms/data/store/mc/RunIISummer20UL17NanoAODv9/ttHToNonbb_M125_TuneCP5_13TeV-powheg-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/100000/89E8691C-A390-C74F-A065-70EF7E3B8F77.root'
-    #test_file = '/cms/data/store/mc/RunIISummer20UL17NanoAODv9/TTToHadronic_TuneCP5_13TeV-powheg-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/80000/02690614-F839-404F-9C50-78EB4D97079E.root'
-    test_file = '/cms/data/store/mc/RunIISummer20UL17NanoAODv9/TTZToBB_TuneCP5_13TeV-amcatnlo-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/80000/225FCDFD-9D2E-4149-AAA4-90CD134F32FB.root'
     #sample = 'Data_SingleMuon'
     #test_file = '/cms/data/store/user/bcaraway/NanoAODv7/PostProcessed/2017/Data_SingleMuon_2017_PeriodD/9A53E75E-4E0E-5A4A-A8C3-A91333DA906D_Skim_8.root'
     #test_file = '/cms/data/store/user/bcaraway/NanoAODv7/PostProcessed/2018/Data_SingleMuon_2018_PeriodC/C8A1B18B-F06D-7D4B-80AC-3FD4774625AF_Skim_14.root'
@@ -451,7 +439,6 @@ if __name__ == '__main__':
     year = re.search(r"201\d", test_file).group()
     golden_json=json.load(open(cfg.goodLumis_file[year]))
     _ = Skim(test_file, sample, year, isData='Data' in sample, jec_sys=None, golden_json=golden_json)
-    #print(self.jets['Jet_pt'])
    # _.local_test()
-    AnaDict(_.get_skim()).to_pickle('/cms/data/store/user/jsamudio/NanoAODv9/Skim/pnet_test.pkl')
+    #AnaDict(_.get_skim()).to_pickle('SingleE_2017.pkl')
     print(_.get_skim())

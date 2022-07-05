@@ -15,13 +15,13 @@ from lib.fun_library import t2Run
 from modules.AnaDict     import AnaDict
 from modules.Skim        import Skim
 from modules.trigsf_Skim import TrigSkim # trigsf_Skim.py
-from modules.bbvleff_Skim import bbvLEffSkim # trigsf_Skim.py
+#from modules.bbvleff_Skim import bbvLEffSkim # trigsf_Skim.py
 from modules.PostSkim import PostSkim
 
 parser = argparse.ArgumentParser(description='Run analysis over specified sample and era')
-parser.add_argument('-s', dest='sample', type=str, 
+parser.add_argument('-s', dest='sample', type=str,
                     choices=sample_cfg.keys(),
-                    #cfg.All_MC+cfg.Data_samples+['test']+cfg.tt_sys_samples+cfg.Sig_EFT_MC+cfg.tt_eft_samples, 
+                    #cfg.All_MC+cfg.Data_samples+['test']+cfg.tt_sys_samples+cfg.Sig_EFT_MC+cfg.tt_eft_samples,
                     required=True, help='sample to analyze')
 parser.add_argument('-y', dest='year', type=str, choices=cfg.Years,
                     required=True, help='year')
@@ -52,9 +52,9 @@ out_dir = f"{cfg.postSkim_dir}/{args.year}/"
 if args.is4trig:
     Skim = TrigSkim # run trig skim instead
     out_dir = out_dir+f"Trig_{sample_cfg[args.sample]['out_name']}"
-if args.is4bbvl:
-    Skim = bbvLEffSkim # run trig skim instead
-    out_dir = out_dir+f"bbvL_{sample_cfg[args.sample]['out_name']}"
+#if args.is4bbvl:
+#    Skim = bbvLEffSkim # run trig skim instead
+#    out_dir = out_dir+f"bbvL_{sample_cfg[args.sample]['out_name']}"
 else:
     out_dir = out_dir+f"{sample_cfg[args.sample]['out_name']}"
 
@@ -62,6 +62,7 @@ else:
 def runSkim():
     #
     files = get_jobfiles()
+    print(files)
     #
     print(f"{sample_dir}/{args.year}/{args.sample}_{args.year}/*.root")
     isttbar = 'TTTo' in args.sample or 'TTJets' in args.sample
@@ -82,14 +83,14 @@ def runSkim():
         postSkim = PostSkim(args.sample, args.year, isData, out_dir, tag)
         postSkim.run()
         #postSkim(out_dir, tag)
-        
+
 def sequential_skim(files, out_dir, tag):
     golden_json=json.load(open(cfg.goodLumis_file[args.year]))
     import multiprocessing
     from functools import partial
     pool = multiprocessing.Pool(4 if not args.is4bbvl else 1)
     #for i, sfile in enumerate(files):
-    _worker = partial( skim_worker, out_dir=out_dir,tag=tag,golden_json=golden_json)  
+    _worker = partial( skim_worker, out_dir=out_dir,tag=tag,golden_json=golden_json)
     _ = pool.map(_worker, zip(range(0,len(files)),files))
     pool.close()
 
@@ -155,13 +156,13 @@ def parallel_skim(files, out_dir, tag):
     print(command)
     os.system(command)
     # make sure jobs are finished before exiting
-    
+
     num_jobs_running = lambda: int(sb.check_output(
         f"qstat -u $USER -w -f | grep 'Job_Name = runSkim_{args.sample}_{args.year}{tag}' | wc -l", shell=True).decode())
     # allow qsub to catch up?
     time.sleep(5)
     while num_jobs_running() > 0:
-        time.sleep(30) 
+        time.sleep(30)
     # jobs are finished here
     # run postjob
     add_queue = f'-q hep'
@@ -175,7 +176,7 @@ def parallel_skim(files, out_dir, tag):
     command += f'{pass_args} {job_script}'
     print(command)
     os.system(command)
-    
+
 
 def get_jobfiles():
     files = []
@@ -193,7 +194,7 @@ def get_jobfiles():
             files = [args.roofile]
     else:
         file_header = args.sample if not isData else process_cfg[args.sample][args.year][0]
-        files = glob(f"{sample_dir}/{args.year}/{file_header}_{args.year}"+("_Period*" if isData else "")+"/*.root")
+        files = glob(f"{sample_dir}/{args.year}/{file_header}_{args.year}"+("_Period*" if isData else "")+"/**/*.root", recursive = True)
     #
     #if len(files) > 10 and args.qsub and '.list' not in files[0]: # create filelist of size 5 for less strain on kodiak
     if args.qsub and '.list' not in files[0]: # create filelist so that jobs work with job arrays
