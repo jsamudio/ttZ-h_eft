@@ -230,7 +230,8 @@ def getZhbbBaseCuts(df_):
         #(df_['n_lb_outZh']   >= 2)             &
         #(df_['n_b_outZh']   >= 1)             &
         (df_['n_ak4jets']   >= 5)             &
-        (df_['Zh_bbvLscore'] >= 0.8)          &
+        #(df_['Zh_bbvLscore'] >= 0.8)          &
+        (df_['Zh_bbvLscore'] >= 0.6)          &
         ( (df_['isEleE']==True) | (df_['isMuonE']==True)) & # pass sim trigger
         (df_['passNotHadLep'] == 1) & # might add
         (df_['Zh_pt']       >= 200)& # 200
@@ -293,11 +294,12 @@ def getZhbbWeight(df_, year):
                   * df_['muon_sf']
                   * df_['electron_trigeffsf']
                   * df_['muon_trigeffsf']
-                  * df_['dak8md_bbvl_real_sf']
-                  * df_['dak8md_bbvl_fake_sf']
-                  * df_['BTagWeight']
-                  * df_['puWeight']
-                  * (df_['PrefireWeight'] if year != '2018' else 1.0))
+                  #* df_['dak8md_bbvl_real_sf']
+                  #* df_['dak8md_bbvl_fake_sf']
+                  #* df_['BTagWeight']
+                  #* df_['puWeight']
+                  #* (df_['PrefireWeight'] if year != '2018' else 1.0))
+                  )
     return tot_weight
 
 #

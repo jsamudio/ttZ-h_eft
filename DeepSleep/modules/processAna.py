@@ -298,16 +298,16 @@ class processAna :
         #
         istt = (abs(gen_ids) == 6)
         #
-        isbb_fromZ     = ((abs(gen_ids) == 5) & (gen_ids[gen_mom] == 23))
-        isqq_fromZ     = ((abs(gen_ids) <  5) & (gen_ids[gen_mom] == 23))
-        isllnunu_fromZ = ((abs(gen_ids) >=  11) & (abs(gen_ids) <= 16) & (gen_ids[gen_mom] == 23))
-        isbb_fromH    = ((abs(gen_ids) == 5) & (gen_ids[gen_mom] == 25))
-        isnonbb_fromH = ((abs(gen_ids) != 5) & (gen_ids[gen_mom] == 25))
-        isHbb     = ((gen_ids == 25) & (isbb_fromH.sum() == 2))
-        isHnonbb  = ((gen_ids == 25) & (isbb_fromH.sum() == 0))
-        isZbb  = ((gen_ids == 23) & (isbb_fromZ.sum() == 2) & ((isHbb.sum() == 0) & (isHnonbb.sum() == 0)))
-        isZqq  = ((gen_ids == 23) & (isqq_fromZ.sum() == 2) & ((isHbb.sum() == 0) & (isHnonbb.sum() == 0)))
-        isZllnunu = ((gen_ids == 23) & (isllnunu_fromZ.sum() == 2) & ((isHbb.sum() == 0) & (isHnonbb.sum() == 0)))
+        isbb_fromZ     = ((abs(gen_ids) == 5) & (gen_ids[gen_mom] == 23) & (gen_st[gen_mom] == 62))
+        isqq_fromZ     = ((abs(gen_ids) <  5) & (gen_ids[gen_mom] == 23) & (gen_st[gen_mom] == 62))
+        isllnunu_fromZ = ((abs(gen_ids) >=  11) & (abs(gen_ids) <= 16) & (gen_ids[gen_mom] == 23) & (gen_st[gen_mom] == 62))
+        isbb_fromH    = ((abs(gen_ids) == 5) & (gen_ids[gen_mom] == 25) & (gen_st[gen_mom] == 62))
+        isnonbb_fromH = ((abs(gen_ids) != 5) & (gen_ids[gen_mom] == 25) & (gen_st[gen_mom] == 62))
+        isHbb     = ((gen_ids == 25) & (isbb_fromH.sum() == 2) & (gen_st == 62))
+        isHnonbb  = ((gen_ids == 25) & (isbb_fromH.sum() == 0) & (gen_st == 62))
+        isZbb  = ((gen_ids == 23) & (isbb_fromZ.sum() == 2) & ((isHbb.sum() == 0) & (isHnonbb.sum() == 0)) & (gen_st == 62))
+        isZqq  = ((gen_ids == 23) & (isqq_fromZ.sum() == 2) & ((isHbb.sum() == 0) & (isHnonbb.sum() == 0)) & (gen_st == 62))
+        isZllnunu = ((gen_ids == 23) & (isllnunu_fromZ.sum() == 2) & ((isHbb.sum() == 0) & (isHnonbb.sum() == 0)) & (gen_st == 62))
         isZH = ((isHbb) | (isZbb) | (isZqq) | (isZllnunu) | (isHnonbb))
         print("isHbb", sum(isHbb.sum()))
         print("isHnonbb", sum(isHnonbb.sum()))
@@ -318,12 +318,14 @@ class processAna :
         #
         zh_pt  = fill1e(gen_pt [isZH]).flatten()
         zh_eta = fill1e(gen_eta[isZH]).flatten()
+        #zh_eta = gen_eta[isZH]
         zh_phi = fill1e(gen_phi[isZH]).flatten()
         zh_mass = fill1e(gen_mass[isZH]).flatten()
         #
         zh_st  = fill1e(gen_st [isZH]).flatten()
         #print(np.unique(zh_st,return_counts=True))
         #
+        print("rZH_eta:",len(rZh_eta.flatten()), "zh_eta:", len(zh_eta), "gen_eta:", len(gen_eta))
         zh_match_dR = deltaR(zh_eta,zh_phi,rZh_eta, rZh_phi)
         rzh_matchb_dR = deltaR(rZh_eta,rZh_phi,gen_eta[(isbb_fromZ) | (isbb_fromH)], gen_phi[(isbb_fromZ) | (isbb_fromH)])
         rzh_matchtt_dR = deltaR(rZh_eta,rZh_phi,gen_eta[(istt)], gen_phi[(istt)])
@@ -372,7 +374,7 @@ class processAna :
         gen_mom = self.gen_df['GenPart_genPartIdxMother']
         gen_eta = self.gen_df['GenPart_eta']
         gen_phi = self.gen_df['GenPart_phi']
-
+        print(len(lep_eta),len(gen_eta))
         #
         if not self.isST:
             islep   = (((abs(gen_ids) == 11) | (abs(gen_ids) == 13)) & ((abs(gen_ids[gen_mom[gen_mom]]) == 6) & (abs(gen_ids[gen_mom]) ==24)))
@@ -712,7 +714,7 @@ if __name__ == '__main__':
 
     from modules.AnaDict import AnaDict
     # will need to open pkl files for testing
-    sample = 'TTBarLep_pow'
+    #sample = 'TTBarLep_pow'
     #sample = 'TT_bb_pow'
     print('Reading Files...')
     dir_ = 'files/2017/mc_files/'

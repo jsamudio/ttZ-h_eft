@@ -15,7 +15,7 @@ import config.ana_cff as cfg
 # add parsargs at some point for year, rundata, minibatch
 parser = argparse.ArgumentParser(description='Run analysis over many samples and years using batch system')
 parser.add_argument('-s', dest='samples', type=str, 
-                    choices=list(process_cfg.keys())+['all','data','mc','mc_nosys', 'mc_eft', 'all_nosys', 'jec','trig','bbvl'],
+                    choices=list(process_cfg.keys())+['all','data','mc','mc_nosys', 'mc_eft', 'all_nosys', 'jec','trig','bbvl','jon'],
                     required=True, help='analyze all, mc only, or data only')
 parser.add_argument('-y', dest='year', type=str, choices=cfg.Years+['all'],
                     required=True, help='year or all years')
@@ -35,6 +35,7 @@ sample_dict = {'all' : [k for k in process_cfg.keys() if 'Data' not in k]+cfg.Da
                'mc_nosys'  : [k for k in process_cfg.keys() if 'Data' not in k and 'sys' not in k],
                'mc_eft' : ['Signal_EFT','Bkg_EFT'],
                'jec' : ['ttZ','ttH','ttbb','single_t','TTBar'],
+               'jon' : ['ttZ','ttH','ttbb','TTBar'],
                'trig': ['TTBar']+cfg.Data_samples,
                'bbvl': ['ttZ','ttH','QCD'],
                'data': cfg.Data_samples,

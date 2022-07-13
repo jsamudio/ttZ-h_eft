@@ -89,10 +89,11 @@ class Plotter :
                               * (v_['HEM_weight'] if obj.year+obj.HEM_opt == '2018' else 1.0)
                               * (v_['lep_trigeffsf'])
                               * v_['lep_sf']
-                              * v_['dak8md_bbvl_sf']
-                              * v_['BTagWeight'] 
-                              * v_['puWeight']  
-                              * (v_['PrefireWeight'] if obj.year != '2018' else 1.0))
+                              #* v_['dak8md_bbvl_sf']
+                              #* v_['BTagWeight'] 
+                              #* v_['puWeight']  
+                              #* (v_['PrefireWeight'] if obj.year != '2018' else 1.0))
+                              )
         else:
             default_weight = self.alt_weight
 
@@ -590,7 +591,8 @@ class Hist (Plotter) :
         self.ax2.yaxis.set_minor_locator(AutoMinorLocator())
         self.ax2.tick_params(which='both', direction='in', top=True, right=True)
         #self.ax2.set_ylim(0.0,5)
-        self.ax2.set_ylabel(r'S/$\sqrt{\mathrm{B}}$')
+        self.ax2.yaxis.set_label_coords(-0.07,0.35)
+        self.ax2.set_ylabel(r'$\mathrm{S/}\sqrt{\mathrm{B}}$')
         self.ax2.grid(True)
 
 

@@ -25,11 +25,12 @@ class PostSkim :
         self.lumi    = cfg.Lumi[year]
         self.outfile = f"{out_dir}/{sample if not isData else sample_cfg[sample]['out_name']}{tag}.pkl"
         self.files   = (lambda : re.findall(rf"{out_dir}/{sample}_\d+.{tag.lstrip('.')}(?:_{tag.lstrip('.')}_)?\d+.pkl",' '.join(glob(f'{out_dir}/{sample}_*{tag}*.pkl'))))
-        print(rf"{out_dir}/{sample}_\d+.{tag.lstrip('.')}(?:_{tag.lstrip('.')}_)?\d+.pkl")
-        print(re.findall(rf"{out_dir}/{sample}_\d+.{tag.lstrip('.')}(?:_{tag.lstrip('.')}_)?\d+.pkl",
-                         ' '.join(glob(f'{out_dir}/{sample}_*{tag}*.pkl'))))
+        #self.files = (lambda: glob(f'{out_dir}/{sample}_*{tag}*.pkl'))
+        #print(rf"{out_dir}/{sample}_\d+.{tag.lstrip('.')}(?:_{tag.lstrip('.')}_)?\d+.pkl")
+        #print(re.findall(rf"{out_dir}/{sample}_\d+.{tag.lstrip('.')}(?:_{tag.lstrip('.')}_)?\d+.pkl",
+        #                 ' '.join(glob(f'{out_dir}/{sample}_*{tag}*.pkl'))))
         print(out_dir)
-        #print(' '.join(glob(f'{out_dir}/{sample}_*{tag}*.pkl')))
+        #print(glob(f'{out_dir}/{sample}_*{tag}*.pkl'))
         self.metaData  = {'sample':sample,'year':year,
                           'xs': sample_cfg[sample]['xs'],
                           'kf': sample_cfg[sample]['kf']}
@@ -59,15 +60,15 @@ class PostSkim :
     def concat_files(self):
         self.files = self.files()
         self.final_pkl = self.open_and_del(self.files[0])
-        for pkl in self.files[1:]:        
+        for pkl in self.files[1:]:
             pkl_dict = self.open_and_del(pkl)
             for k in pkl_dict:
                 #print(pkl_dict[k])
                 self.interp_dict.get(k, (lambda awk: self.concat_other(awk,k)))(pkl_dict[k])
-    
+
     #
     def concat_events(self,df):
-        self.final_pkl['events'] = pd.concat([self.final_pkl['events'],df], 
+        self.final_pkl['events'] = pd.concat([self.final_pkl['events'],df],
                                              axis = 'rows', ignore_index=True)
     def concat_meta(self,di):
         self.final_pkl['metaData'] = {var: self.final_pkl['metaData'][var] + di[var] for var in di}
@@ -88,7 +89,7 @@ class PostSkim :
             return awkward.JaggedArray.fromcounts(counts, contents)
         except AttributeError:
             return np.concatenate([arr for arr in arrays])
-            
+
 
 
 if __name__ == '__main__':

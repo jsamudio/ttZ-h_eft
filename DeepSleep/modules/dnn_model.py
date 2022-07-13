@@ -173,7 +173,7 @@ def train_model(m_info):
         plot_history(history)
         print('here')
         # dont overwrite ~~~ !!!
-        exit()
+        #exit()
         model.save_weights(cfg.dnn_ZH_dir+'/'+'newgenm_model'+'.h5')
         # ======= testing binary
         #model.save_weights(cfg.dnn_ZH_dir+'/'+'binary_model'+'.h5')
@@ -328,5 +328,5 @@ if __name__ == "__main__":
     #m_info = {'sequence': [['Dense', 128], ['Dense', 64], ['Dropout', 0.5]], 'other_settings': {'fl_a': [1, 2, 0.75], 'fl_g': 0.25, 'lr_alpha': 0.0003}, 'n_epochs': 150, 'batch_size': 10256}
     m_info = {'sequence': [['Dense', 128], ['Dense', 64], ['Dropout', 0.5]], 'other_settings': {'fl_a': [1, 1.5, 1], 'fl_g': 0.25, 'lr_alpha': 0.0003}, 'n_epochs': 150, 'batch_size': 10256}
 
-    local_test(m_info, train_binary=True)
+    local_test(m_info)
 

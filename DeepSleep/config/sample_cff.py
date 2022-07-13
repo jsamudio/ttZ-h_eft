@@ -1,70 +1,70 @@
 # --- TTZH sample Config File --- #
 # python dictionary format
 
-process_cfg = { 
+process_cfg = {
     'Signal_EFT' : ['TTZ_EFT',
                     'TTH_EFT'],
     'Bkg_EFT'    : [#'TTJets_EFT',
                     'TTbb_EFT'],
-    
+
     'ttH'        : ['ttHTobb',
                     'ttHToNonbb'],
     'ttZ'        : ['TTZToLLNuNu',
-                    'TTZToBB',    
+                    'TTZToBB',
                     'TTZToQQ'],
-    'TTBar'      : ['TTToHadronic',    
+    'TTBar'      : ['TTToHadronic',
                     'TTToSemiLeptonic',
                     'TTTo2L2Nu'],
     'ttbb'       : ['TTbb_Hadronic',
                     'TTbb_SemiLeptonic',
                     'TTbb_2L2Nu'],
-    'TTBar_sys'  : ['TTToHadronic_UEDown',   
-                    'TTToHadronic_UEUp',     
-                    'TTToHadronic_hdampDown',
-                    'TTToHadronic_hdampUp',  
-                    'TTToSemiLeptonic_UEDown',   
-                    'TTToSemiLeptonic_UEUp',     
-                    'TTToSemiLeptonic_hdampDown',
-                    'TTToSemiLeptonic_hdampUp',  
-                    'TTTo2L2Nu_UEDown',   
-                    'TTTo2L2Nu_UEUp',     
-                    'TTTo2L2Nu_hdampDown',
-                    'TTTo2L2Nu_hdampUp'],
-    'ttbb_sys'   : ['TTbb_Hadronic_hdampDown',
-                    'TTbb_Hadronic_hdampUp',  
-                    'TTbb_SemiLeptonic_hdampDown',
-                    'TTbb_SemiLeptonic_hdampUp',  
-                    'TTbb_2L2Nu_hdampDown',
-                    'TTbb_2L2Nu_hdampUp'],
-    'single_t'   : ['ST_tW_top',
-                    'ST_tW_antitop',
-                    'ST_s_lep',
-                    'ST_t_top',     
-                    'ST_t_antitop',],
+#    'TTBar_sys'  : ['TTToHadronic_UEDown',
+#                    'TTToHadronic_UEUp',
+#                    'TTToHadronic_hdampDown',
+#                    'TTToHadronic_hdampUp',
+#                    'TTToSemiLeptonic_UEDown',
+#                    'TTToSemiLeptonic_UEUp',
+#                    'TTToSemiLeptonic_hdampDown',
+#                    'TTToSemiLeptonic_hdampUp',
+#                    'TTTo2L2Nu_UEDown',
+#                    'TTTo2L2Nu_UEUp',
+#                    'TTTo2L2Nu_hdampDown',
+#                    'TTTo2L2Nu_hdampUp'],
+#    'ttbb_sys'   : ['TTbb_Hadronic_hdampDown',
+#                    'TTbb_Hadronic_hdampUp',
+#                    'TTbb_SemiLeptonic_hdampDown',
+#                    'TTbb_SemiLeptonic_hdampUp',
+#                    'TTbb_2L2Nu_hdampDown',
+#                    'TTbb_2L2Nu_hdampUp'],
+#    'single_t'   : ['ST_tW_top',
+#                    'ST_tW_antitop',
+#                    'ST_s_lep',
+#                    'ST_t_top',
+#                    'ST_t_antitop',],
     #'tZq_ll',],# might move this to ttX
     #'rare'       : [#'tZq_had',
     #                'THW',
     #                'THQ'],
     'ttX'        : ['TTWJetsToLNu',
-                    'TTWJetsToQQ', 
-                    'TTTT',  
+                    'TTWJetsToQQ',
+                    'TTTT',
                     'TTGJets',
                     'THW',
                     'THQ',
                     'tZq_ll',],
     'VJets'      : [#'WJetsToLNu_HT_70to100',
-                    #'WJetsToLNu_HT_100to200',  
-                    #'WJetsToLNu_HT_200to400',  
-                    'WJetsToLNu_HT_400to600',  
-                    'WJetsToLNu_HT_600to800',  
-                    'WJetsToLNu_HT_800to1200', 
+                    #'WJetsToLNu_HT_100to200',
+                    #'WJetsToLNu_HT_200to400',
+                    'WJetsToLNu_HT_400to600',
+                    'WJetsToLNu_HT_600to800',
+                    'WJetsToLNu_HT_800to1200',
                     'WJetsToLNu_HT_1200to2500',
                     'WJetsToLNu_HT_2500toInf',
                     #'DYJetsToLL_HT_70to100',
-                    #'DYJetsToLL_HT_100to200',  
-                    #'DYJetsToLL_HT_200to400',  
-                    'DYJetsToLL_HT_400to600',  
-                    'DYJetsToLL_HT_600to800',  
+                    #'DYJetsToLL_HT_100to200',
+                    #'DYJetsToLL_HT_200to400',
+                    'DYJetsToLL_HT_400to600',
+                    'DYJetsToLL_HT_600to800',
                     'DYJetsToLL_HT_800to1200',
                     'DYJetsToLL_HT_1200to2500',
                     'DYJetsToLL_HT_2500toInf'],
@@ -77,7 +77,7 @@ process_cfg = {
     #                'ZZZ',
     #                'WZG',
     #                'WWG'],
-    
+
     'QCD'         : [#'QCD_HT_200to300',
                      #'QCD_HT_300to500',
                      'QCD_HT_500to700',
@@ -102,20 +102,20 @@ signal_xsec = {
     'ttH': 0.5084
 }
 
-sample_cfg = {                 
-    # EFT Samples              
-    'TTZ_EFT' : {     'out_name'  : 'TTZ_EFT', 'xs' : 0.7826,  'kf' : 1.0,},                                              
-    'TTH_EFT' : {     'out_name'  : 'TTH_EFT', 'xs' : 0.5084,  'kf' : 1.0,},                                              
-    'TTJets_EFT' : {  'out_name'  : 'TTJets_EFT',    'xs' : 832.40,  'kf' : 1.0,},                                              
-    'TTbb_EFT'   : {  'out_name'  : 'TTbb_EFT',    'xs' : 1.0,     'kf' : 1.0,},                                              
-    # ttH                                           
-    'ttHTobb'    : {  'out_name'  : 'ttH',        'xs' : .2934,   'kf' : 1.0,},                                              
-    'ttHToNonbb' : {  'out_name'  : 'ttH',        'xs' : .215,    'kf' : 1.0,},                                              
-    # ttZ                                           
-    'TTZToLLNuNu' : { 'out_name'  : 'ttZ',        'xs' : .2529,   'kf' : 1.0,},                                              
-    'TTZToBB'     : { 'out_name'  : 'ttZ',        'xs' : .1157,   'kf' : 1.0,},                                              
-    'TTZToQQ'     : { 'out_name'  : 'ttZ',        'xs' : .5297,   'kf' : 1.0,},                                              
-    # ttbar (5FS)                                   
+sample_cfg = {
+    # EFT Samples
+    'TTZ_EFT' : {     'out_name'  : 'TTZ_EFT', 'xs' : 0.7826,  'kf' : 1.0,},
+    'TTH_EFT' : {     'out_name'  : 'TTH_EFT', 'xs' : 0.5084,  'kf' : 1.0,},
+    'TTJets_EFT' : {  'out_name'  : 'TTJets_EFT',    'xs' : 832.40,  'kf' : 1.0,},
+    'TTbb_EFT'   : {  'out_name'  : 'TTbb_EFT',    'xs' : 1.0,     'kf' : 1.0,},
+    # ttH
+    'ttHTobb'    : {  'out_name'  : 'ttH',        'xs' : .2934,   'kf' : 1.0,},
+    'ttHToNonbb' : {  'out_name'  : 'ttH',        'xs' : .215,    'kf' : 1.0,},
+    # ttZ
+    'TTZToLLNuNu' : { 'out_name'  : 'ttZ',        'xs' : .2529,   'kf' : 1.0,},
+    'TTZToBB'     : { 'out_name'  : 'ttZ',        'xs' : .1157,   'kf' : 1.0,},
+    'TTZToQQ'     : { 'out_name'  : 'ttZ',        'xs' : .5297,   'kf' : 1.0,},
+    # ttbar (5FS)
     'TTToHadronic'     : { 'out_name' : 'TTBar',       'xs' : 380.095, 'kf' : 1.0,},
     'TTToSemiLeptonic' : { 'out_name' : 'TTBar',       'xs' : 364.018, 'kf' : 1.0,},
     'TTTo2L2Nu'        : { 'out_name' : 'TTBar',       'xs' : 88.29,   'kf' : 1.0,},
@@ -124,9 +124,9 @@ sample_cfg = {
     'TTbb_SemiLeptonic' : { 'out_name' : 'ttbb',        'xs' : 1.0,    'kf' : 1.0,},
     'TTbb_2L2Nu'        : { 'out_name' : 'ttbb',        'xs' : 1.0,    'kf' : 1.0,},
     # ttbar systematic samples
-    'TTToHadronic_UEDown'         : {'out_name' : 'TTBar_sys',     'xs'  : 380.095, 'kf' : 1.0,},                                   
-    'TTToHadronic_UEUp'           : {'out_name' : 'TTBar_sys',     'xs'  : 380.095, 'kf' : 1.0,},                                   
-    'TTToHadronic_hdampDown'      : {'out_name' : 'TTBar_sys',     'xs'  : 380.095, 'kf': 1.0,},                                   
+    'TTToHadronic_UEDown'         : {'out_name' : 'TTBar_sys',     'xs'  : 380.095, 'kf' : 1.0,},
+    'TTToHadronic_UEUp'           : {'out_name' : 'TTBar_sys',     'xs'  : 380.095, 'kf' : 1.0,},
+    'TTToHadronic_hdampDown'      : {'out_name' : 'TTBar_sys',     'xs'  : 380.095, 'kf': 1.0,},
     'TTToHadronic_hdampUp'        : {'out_name' : 'TTBar_sys',     'xs'  : 380.095, 'kf': 1.0,},
     #
     'TTToSemiLeptonic_UEDown'    : {'out_name' : 'TTBar_sys',      'xs' : 364.018,  'kf' : 1.0,},
@@ -139,22 +139,22 @@ sample_cfg = {
     'TTTo2L2Nu_hdampDown'        : {'out_name' : 'TTBar_sys',      'xs' : 88.29,    'kf': 1.0,},
     'TTTo2L2Nu_hdampUp'          : {'out_name' : 'TTBar_sys',      'xs' : 88.29,    'kf': 1.0,},
     #
-    'TTbb_Hadronic_hdampDown'     : {'out_name' : 'ttbb_sys',      'xs' : 1.0,      'kf' : 1.0,},            
+    'TTbb_Hadronic_hdampDown'     : {'out_name' : 'ttbb_sys',      'xs' : 1.0,      'kf' : 1.0,},
     'TTbb_Hadronic_hdampUp'       : {'out_name' : 'ttbb_sys',      'xs' : 1.0,      'kf' : 1.0,},
-    #                                                                              
+    #
     'TTbb_SemiLeptonic_hdampDown' : {'out_name' : 'ttbb_sys',      'xs' : 1.0,      'kf' : 1.0,},
     'TTbb_SemiLeptonic_hdampUp'   : {'out_name' : 'ttbb_sys',      'xs' : 1.0,      'kf' : 1.0,},
-    #                                                                              
+    #
     'TTbb_2L2Nu_hdampDown'        : {'out_name' : 'ttbb_sys',      'xs' : 1.0,      'kf' : 1.0,},
     'TTbb_2L2Nu_hdampUp'          : {'out_name' : 'ttbb_sys',      'xs' : 1.0,      'kf' : 1.0,},
-    # singleT
-    'ST_tW_top'            : {'out_name' : 'single_t',     'xs' : 19.12,   'kf' : 1.0,}, # 35.85 -> 19.12
-    'ST_tW_antitop'        : {'out_name' : 'single_t',     'xs' : 19.12,   'kf' : 1.0,}, # 35.85 -> 19.12
-    #'ST_tW_top_nofull'     : {'out_name' : 'single_t',     'xs' : 19.12,   'kf' : 1.0,},
-    #'ST_tW_antitop_nofull' : {'out_name' : 'single_t',     'xs' : 19.12,   'kf' : 1.0,},
-    'ST_s_lep'      : {'out_name' : 'single_t',     'xs' : 6.96,    'kf' : 1.0,},
-    'ST_t_top'      : {'out_name' : 'single_t',     'xs' : 136.065, 'kf' : 1.0,},
-    'ST_t_antitop'  : {'out_name' : 'single_t',     'xs' : 80.97,   'kf' : 1.0,},
+#    # singleT
+#    'ST_tW_top'            : {'out_name' : 'single_t',     'xs' : 19.12,   'kf' : 1.0,}, # 35.85 -> 19.12
+#    'ST_tW_antitop'        : {'out_name' : 'single_t',     'xs' : 19.12,   'kf' : 1.0,}, # 35.85 -> 19.12
+#    #'ST_tW_top_nofull'     : {'out_name' : 'single_t',     'xs' : 19.12,   'kf' : 1.0,},
+#    #'ST_tW_antitop_nofull' : {'out_name' : 'single_t',     'xs' : 19.12,   'kf' : 1.0,},
+#    'ST_s_lep'      : {'out_name' : 'single_t',     'xs' : 6.96,    'kf' : 1.0,},
+#    'ST_t_top'      : {'out_name' : 'single_t',     'xs' : 136.065, 'kf' : 1.0,},
+#    'ST_t_antitop'  : {'out_name' : 'single_t',     'xs' : 80.97,   'kf' : 1.0,},
     #'tZq_ll'        : {'out_name' : 'single_t',     'xs' : 0.0758,  'kf' : 1.0,},
 
     'tZq_had'       : {'out_name' : 'rare',     'xs' : 0.1518,  'kf' : 1.0,}, # not avail for all years
@@ -196,8 +196,8 @@ sample_cfg = {
     'WZG' : {   'out_name' : 'VVV',   'xs' :  0.04123,   'kf' : 1.0,},
     'WWG' : {   'out_name' : 'VVV',   'xs' :  0.2147,    'kf' : 1.0,},
     # QCD
-    #'QCD_HT_200to300'   : {   'out_name' : 'QCD', 'xs' : 1556000, 'kf' : 1.0,},  
-    #'QCD_HT_300to500'   : {   'out_name' : 'QCD', 'xs' : 323600,  'kf' : 1.0,},  
+    #'QCD_HT_200to300'   : {   'out_name' : 'QCD', 'xs' : 1556000, 'kf' : 1.0,},
+    #'QCD_HT_300to500'   : {   'out_name' : 'QCD', 'xs' : 323600,  'kf' : 1.0,},
     'QCD_HT_500to700'   : {   'out_name' : 'QCD', 'xs' : 29990,   'kf' : 1.0,}, # 'xs2016':32150
     'QCD_HT_700to1000'  : {   'out_name' : 'QCD', 'xs' : 6351,    'kf' : 1.0,}, # 'xs2016':6828
     'QCD_HT_1000to1500' : {   'out_name' : 'QCD', 'xs' : 1093,    'kf' : 1.0,}, # 'xs2016':1208

@@ -51,7 +51,7 @@ Sig_MC            = ['ttH','ttZ']
 Bkg_MC            = ['TTBar','ttbb','ttX','single_t','VJets']
 #Bkg_MC            = ['TTBar','ttbb','ttX','single_t','VV','VVV','VJets']
 #All_MC            = ['ttZ','ttH','TTBar','ttbb','single_t','ttX','VJets','VV','rare','QCD']
-All_MC            = ['ttZ','ttH','TTBar','ttbb','single_t','ttX','VJets']
+All_MC            = ['ttZ','ttH','TTBar','ttbb']#,'single_t','ttX','VJets']
 
 # Handle systematic sample docs
 #tt_sys_samples    = ['TTBar_UEUp','TTBar_UEDown','TTBar_hdampUp','TTBar_hdampDown',
@@ -103,10 +103,12 @@ ZHbbFitMinJets = 4
 ZHbbFitMaxJets = 100
 ZHbb_btagWP    = {'2016': 0.2489, # Med for 2016
                   '2017': 0.3040, # Med for 2017
+                  #'2017': 0.4941, # Med for 2017
                   '2018': 0.2783  # Med for 2018
                   }
 ZHbb_loosebtagWP    = {'2016': 0.0480, # Loose for 2016
                        '2017': 0.0532, # Loose for 2017
+                       #'2017': 0.1522, # Loose for 2017
                        '2018': 0.0490  # Loose for 2018
                    }
 #
